@@ -1,0 +1,58 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="ud-step.html">
+
+<dom-module id="ud-stepper">
+  <template>
+    <style>
+       :host {
+        display: block;
+      }
+    </style>
+  </template>
+
+  <script>
+    {
+      /**
+       * `ud-stepper`
+       * Material Design Stepper
+       *
+       * @customElement
+       * @polymer
+       * @memberof UrDeveloper
+       * @demo demo/index.html
+       */
+      class UdStepperElement extends Polymer.Element {
+        static get is() {
+          return 'ud-stepper';
+        }
+        static get properties() {
+          return {
+            /**
+             * Determines if the stepper is vertical.
+             */
+            vertial: {
+              type: Boolean,
+              reflectToAttribute: Boolean
+            },
+
+            /**
+             * Determines if the stepper is linear.
+             */
+             linear: {
+              type: Boolean,
+              reflectToAttribute: Boolean
+            }
+          };
+        }
+      }
+
+      window.customElements.define(UdStepperElement.is, UdStepperElement);
+
+      /**
+       * @namespace
+       */
+      window.UrDeveloper = window.UrDeveloper || {};
+      UrDeveloper.UdStepperElement = UdStepperElement;
+    }
+  </script>
+</dom-module>

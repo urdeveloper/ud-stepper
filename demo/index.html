@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>ud-stepper demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../ud-stepper.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic ud-stepper demo</h3>
+      <demo-snippet>
+        <template>
+          <ud-stepper>
+            <ud-step>
+              <template class="label">Step 1</template>
+              <template></template>
+            </ud-step>
+            <ud-step>
+              <template class="label">Step 2</template>
+              <template></template>
+            </ud-step>
+            <ud-step>
+              <template class="label">Step 3</template>
+              <template></template>
+            </ud-step>
+          </ud-stepper>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="ud-step.html">
+
+<dom-module id="ud-step">
+    <template>
+        <style>
+             :host {
+                display: block;
+            }
+        </style>
+    </template>
+
+    <script>
+        {
+            /**
+             * `ud-step`
+             * Material Design Step
+             *
+             * @customElement
+             * @polymer
+             * @memberof UrDeveloper
+             */
+            class UdStepElement extends Polymer.Element {
+                static get is() {
+                    return 'ud-step';
+                }
+                static get properties() {
+                    return {
+                        /**
+                         * Determines if the step is editable.
+                         */
+                        editable: {
+                            type: Boolean,
+                            reflectToAttribute: true
+                        },
+
+                        /**
+                         * Determines if the step is optional.
+                         */
+                        optional: {
+                            type: Boolean,
+                            reflectToAttribute: true
+                        }
+                    };
+                }
+            }
+
+            window.customElements.define(UdStepElement.is, UdStepElement);
+
+            /**
+             * @namespace
+             */
+            window.UrDeveloper = window.UrDeveloper || {};
+            UrDeveloper.UdStepElement = UdStepElement;
+        }
+    </script>
+</dom-module>
