@@ -1,58 +1,159 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../paper-styles/element-styles/paper-material-styles.html">
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="../paper-styles/typography.html">
+
 <link rel="import" href="ud-step.html">
 
 <dom-module id="ud-stepper">
-  <template>
-    <style>
-       :host {
-        display: block;
-      }
-    </style>
-  </template>
+	<template>
+		<style include="paper-material-styles">
+			:host {
+				display: block;
+			}
 
-  <script>
-    {
-      /**
-       * `ud-stepper`
-       * Material Design Stepper
-       *
-       * @customElement
-       * @polymer
-       * @memberof UrDeveloper
-       * @demo demo/index.html
-       */
-      class UdStepperElement extends Polymer.Element {
-        static get is() {
-          return 'ud-stepper';
-        }
-        static get properties() {
-          return {
-            /**
-             * Determines if the stepper is vertical.
-             */
-            vertial: {
-              type: Boolean,
-              reflectToAttribute: Boolean
-            },
+			.header-container {
+				display: flex;
+				flex-direction: row;
 
-            /**
-             * Determines if the stepper is linear.
-             */
-             linear: {
-              type: Boolean,
-              reflectToAttribute: Boolean
-            }
-          };
-        }
-      }
+				flex-wrap: nowrap;
+				align-items: center;
+				@apply --paper-material-elevation-1;
+			}
 
-      window.customElements.define(UdStepperElement.is, UdStepperElement);
+			.header {
+				display: flex;
+				flex-direction: row;
+				max-height: 72px;
+			}
 
-      /**
-       * @namespace
-       */
-      window.UrDeveloper = window.UrDeveloper || {};
-      UrDeveloper.UdStepperElement = UdStepperElement;
-    }
-  </script>
+			.header:not(:last-of-type) {
+				flex: 1;
+			}
+
+			.header:not(:last-of-type):after {
+				content: '';
+				position: relative;
+				flex: 1;
+				top: 36px;
+				height: 1px;
+				margin-left: -12px;
+				background-color: rgba(0, 0, 0, 0.1);
+			}
+
+			.header .label {
+				display: flex;
+				flex-direction: row;
+				cursor: pointer;
+			}
+
+			.header .label {
+				padding: 24px 24px 24px 24px;
+			}
+
+			.header .label:hover {
+				background-color: #f0f0f0;
+			}
+
+			.label-badge {
+				background-color: var(--google-blue-500);
+				color: white;
+				border-radius: 50%;
+				width: 24px;
+				height: 24px;
+				@apply --paper-font-caption;
+				text-align: center;
+				line-height: 24px;
+			}
+
+			.label-text {
+				@apply --paper-font-body2;
+				padding-left: 8px;
+			}
+		</style>
+		<div class="header-container">
+			<dom-repeat items="[[_steps]]">
+				<template>
+					<div class="header">
+						<div class="label">
+							<div class="label-badge">[[item.index]]</div>
+							<div class="label-text">[[item.title]]</div>
+						</div>
+					</div>
+				</template>
+			</dom-repeat>
+		</div>
+
+	</template>
+
+	<script>
+		{
+			/**
+			 * `ud-stepper`
+			 * Material Design Stepper
+			 *
+			 * @customElement
+			 * @polymer
+			 * @memberof UrDeveloper
+			 * @demo demo/index.html
+			 */
+			class UdStepperElement extends Polymer.Element {
+				static get is() {
+					return 'ud-stepper';
+				}
+
+				static get properties() {
+					return {
+
+						/**
+						 * Determines if the stepper is vertical.
+						 */
+						vertical: {
+							type: Boolean,
+							reflectToAttribute: Boolean
+						},
+
+						/**
+						 * Determines if the stepper is linear.
+						 */
+						linear: {
+							type: Boolean,
+							reflectToAttribute: Boolean
+						},
+
+						_steps: {
+							type: Array
+						}
+					};
+				}
+
+				constructor() {
+					super();
+					this._templateObserver = new Polymer.FlattenedNodesObserver(this, info => {
+						if (info.addedNodes.filter(this._isStep).length > 0 ||
+							info.removedNodes.filter(this._isStep).length > 0) {
+							this._steps = this._findSteps();
+						}
+					});
+				}
+
+				_findSteps() {
+					return Array.from(this.querySelectorAll('ud-step'));
+				}
+
+				_isStep(node) {
+					return node.nodeType === Node.ELEMENT_NODE && /ud-step/i.test(node.localName);
+				}
+			}
+
+			window.customElements.define(UdStepperElement.is, UdStepperElement);
+
+			/**
+			 * @namespace
+			 */
+			window.UrDeveloper = window.UrDeveloper || {};
+			UrDeveloper.UdStepperElement = UdStepperElement;
+		}
+	</script>
 </dom-module>
