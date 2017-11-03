@@ -3,6 +3,8 @@
 <link rel="import" href="../paper-styles/element-styles/paper-material-styles.html">
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../iron-selector/iron-selector.html">
+<link rel="import" href="../iron-pages/iron-pages.html">
 
 <link rel="import" href="ud-step.html">
 
@@ -10,7 +12,8 @@
 	<template>
 		<style include="paper-material-styles">
 			:host {
-				display: block;
+				display: flex;
+				flex-direction: column;
 			}
 
 			.header-container {
@@ -56,8 +59,8 @@
 				background-color: #f0f0f0;
 			}
 
-			.label-badge {
-				background-color: var(--google-blue-500);
+			.label-icon {
+				background-color: rgba(0, 0, 0, 0.38);
 				color: white;
 				border-radius: 50%;
 				width: 24px;
@@ -70,21 +73,32 @@
 			.label-text {
 				@apply --paper-font-body2;
 				padding-left: 8px;
+				color: rgba(0, 0, 0, 0.54);
+			}
+
+			.header.selected .label-icon {
+				background-color: var(--google-blue-500);
+			}
+
+			.header.selected .label-text {
+				color: rgba(0, 0, 0, 0.87);
 			}
 		</style>
-		<div class="header-container">
+		<iron-selector class="header-container" selectable=".header.selectable" selected-class="selected" selected="{{selectedStep}}">
 			<dom-repeat items="[[_steps]]">
 				<template>
-					<div class="header">
+					<div class$="[[_getHeaderClasses(item)]]">
 						<div class="label">
-							<div class="label-badge">[[item.index]]</div>
+							<div class="label-icon">[[_getStepNumber(index)]]</div>
 							<div class="label-text">[[item.title]]</div>
 						</div>
 					</div>
 				</template>
 			</dom-repeat>
-		</div>
-
+		</iron-selector>
+		<iron-pages selected="{{selectedStep}}" selected-attribute="selected">
+			<slot></slot>
+		</iron-pages>
 	</template>
 
 	<script>
@@ -124,6 +138,11 @@
 
 						_steps: {
 							type: Array
+						},
+
+						selectedStep: {
+							type: Boolean,
+							notify: true
 						}
 					};
 				}
@@ -134,16 +153,61 @@
 						if (info.addedNodes.filter(this._isStep).length > 0 ||
 							info.removedNodes.filter(this._isStep).length > 0) {
 							this._steps = this._findSteps();
+							this._prepareSteps(this._steps);
+							this.selectedStep = 0;
 						}
 					});
+				}
+
+				ready() {
+					super.ready();
+					this.addEventListener('step-action', evt => this._handleStepAction(evt));
 				}
 
 				_findSteps() {
 					return Array.from(this.querySelectorAll('ud-step'));
 				}
 
+				_prepareSteps(steps) {
+					steps.forEach((step, i) => {
+						const allowedActions = ['continue','cancel'];
+						if (i != 0 && !this.linear) {
+							allowedActions.push('back');
+						}
+						step.allowedActions = allowedActions;
+					});
+				}
+
 				_isStep(node) {
 					return node.nodeType === Node.ELEMENT_NODE && /ud-step/i.test(node.localName);
+				}
+
+				_getStepNumber(index) {
+					return index + 1;
+				}
+
+				_getHeaderClasses(item) {
+					return 'header selectable';
+				}
+
+				_handleStepAction(evt) {
+					this[evt.detail.toLowerCase()](evt.target);
+				}
+
+				continue (step) {
+					if (this.selectedStep < this._steps.length - 1) {
+						this.selectedStep = this.selectedStep + 1;
+					}
+				}
+
+				back(step) {
+					if (this.selectedStep > 0) {
+						this.selectedStep = this.selectedStep - 1;
+					}
+				}
+
+				cancel(evt) {
+
 				}
 			}
 

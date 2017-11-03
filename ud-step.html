@@ -1,12 +1,61 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-styles/element-styles/paper-material-styles.html">
+<link rel="import" href="../paper-styles/typography.html">
 
 <dom-module id="ud-step">
 	<template>
-		<style>
+		<style include="paper-material-styles">
 			:host {
-				display: block;
+				display: flex;
+				flex-direction: column;
+				@apply --paper-material-elevation-1;
+			}
+
+			#content {
+				margin: 24px;
+			}
+
+			#actions {
+				padding: 24px;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: nowrap;
+				justify-content: space-between;
+			}
+
+			.linear-actions {
+				display: flex;
+				flex-direction: row;
+				justify-content: flex-end;
+			}
+
+			paper-button {
+				@apply --paper-font-button;
+				color: rgba(0, 0, 0, 0.83);
+			}
+
+			.continue-btn {
+				color: var(--google-blue-500);
+			}
+
+			paper-button[disabled] {
+				color: rgba(0, 0, 0, 0.50);
+				background-color: transparent;
 			}
 		</style>
+		<div id="content">
+			<slot name="content"></slot>
+		</div>
+		<div id="actions">
+			<slot name="actions" id="actionsSlot">
+				<paper-button data-action="back" class="back-btn">Back</paper-button>
+				<div class="linear-actions">
+					<paper-button data-action="cancel">Cancel</paper-button>
+					<paper-button data-action="continue" class="continue-btn">Continue</paper-button>
+				</div>
+			</slot>
+		</div>
 	</template>
 	<script>
 		{
@@ -33,15 +82,49 @@
 							reflectToAttribute: true
 						},
 
-						index: {
-							type: Number
+						selected: {
+							type: Boolean,
+							reflectToAttribute: true
+						},
+
+						allowedActions: {
+							type: Boolean
+						},
+
+						_actionButtons: {
+							type: Array
 						}
 					}
 				}
 
-				connectedCallback() {
-					super.connectedCallback();
-					this._headerTemplate = this.shadowRoot.querySelector('template.header');
+				static get observers() {
+					return ['_updateActionsButtons(_actionButtons.*,allowedActions)']
+				}
+
+				ready() {
+					super.ready();
+					this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsSlot, (info) => {
+						this._actionButtons = Array.from(info.target.querySelectorAll('[data-action]'));
+						this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
+							ab.addEventListener('tap', (evt) => this._handleAction(evt));
+						});
+					});
+				}
+
+				_updateActionsButtons(actionButtons, allowedActions) {
+					if (!actionButtons || !allowedActions) return;
+					
+					this._actionButtons.forEach(ab => {
+						const dataAction = ab.getAttribute('data-action');
+						ab.disabled = this.allowedActions.indexOf(dataAction) < 0;
+					});
+				}
+
+				_handleAction(evt) {
+					this.dispatchEvent(new CustomEvent('step-action', {
+						detail: evt.target.getAttribute('data-action'),
+						bubbles: true
+					}));
 				}
 			}
 

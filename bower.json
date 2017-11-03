@@ -4,7 +4,10 @@
   "main": "ud-stepper.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "paper-styles": "^2.0.0"
+    "paper-styles": "^2.0.0",
+    "iron-selector": "^2.0.0",
+    "iron-pages": "^2.0.0",
+    "paper-button": "^2.0.0"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",

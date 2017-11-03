@@ -15,6 +15,7 @@
 
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
+
     </style>
   </custom-style>
 </head>
@@ -26,13 +27,13 @@
       <template>
         <ud-stepper>
           <ud-step title="Step 1">
-            Step 1 Content
+            <div slot="content">Step 1 Content</div>
           </ud-step>
           <ud-step title="Optional Step 2">
-            Step 2 Content
+              <div slot="content">Step 2 Content</div>
           </ud-step>
           <ud-step title="Step 3">
-            Step 3 Content
+              <div slot="content">Step 3 Content</div>
           </ud-step>
         </ud-stepper>
       </template>
