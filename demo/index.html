@@ -22,18 +22,54 @@
 
 <body>
   <div class="vertical-section-container centered">
-    <h3>Basic ud-stepper demo</h3>
+    <h3>Linear Stepper</h3>
+    <demo-snippet>
+      <template>
+        <ud-stepper linear>
+          <ud-step title="Step 1">
+            <div slot="content">Step 1 Content</div>
+          </ud-step>
+          <ud-step title="Step 2">
+            <div slot="content">Step 2 Content</div>
+          </ud-step>
+          <ud-step title="Step 3">
+            <div slot="content">Step 3 Content</div>
+          </ud-step>
+        </ud-stepper>
+      </template>
+    </demo-snippet>
+  </div>
+  <div class="vertical-section-container centered">
+    <h3>Non-Linear Stepper</h3>
     <demo-snippet>
       <template>
         <ud-stepper>
           <ud-step title="Step 1">
             <div slot="content">Step 1 Content</div>
           </ud-step>
-          <ud-step title="Optional Step 2">
-              <div slot="content">Step 2 Content</div>
+          <ud-step title="Step 2">
+            <div slot="content">Step 2 Content</div>
           </ud-step>
           <ud-step title="Step 3">
-              <div slot="content">Step 3 Content</div>
+            <div slot="content">Step 3 Content</div>
+          </ud-step>
+        </ud-stepper>
+      </template>
+    </demo-snippet>
+  </div>
+  <div class="vertical-section-container centered">
+    <h3>Linear Stepper with an editable step</h3>
+    <demo-snippet>
+      <template>
+        <ud-stepper linear>
+          <ud-step title="Step 1" editable>
+            <div slot="content">Step 1 Content</div>
+          </ud-step>
+          <ud-step title="Step 2">
+            <div slot="content">Step 2 Content</div>
+          </ud-step>
+          <ud-step title="Step 3">
+            <div slot="content">Step 3 Content</div>
           </ud-step>
         </ud-stepper>
       </template>

@@ -5,8 +5,11 @@
 <link rel="import" href="../paper-styles/typography.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
 <link rel="import" href="../iron-pages/iron-pages.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../polymer/lib/mixins/mutable-data.html">
 
 <link rel="import" href="ud-step.html">
+<link rel="import" href="ud-iconset.html">
 
 <dom-module id="ud-stepper">
 	<template>
@@ -49,9 +52,7 @@
 				display: flex;
 				flex-direction: row;
 				cursor: pointer;
-			}
-
-			.header .label {
+				align-items: center;
 				padding: 24px 24px 24px 24px;
 			}
 
@@ -60,11 +61,7 @@
 			}
 
 			.label-icon {
-				background-color: rgba(0, 0, 0, 0.38);
-				color: white;
-				border-radius: 50%;
-				width: 24px;
-				height: 24px;
+				color: rgba(0, 0, 0, 0.38);
 				@apply --paper-font-caption;
 				text-align: center;
 				line-height: 24px;
@@ -76,20 +73,49 @@
 				color: rgba(0, 0, 0, 0.54);
 			}
 
-			.header.selected .label-icon {
-				background-color: var(--google-blue-500);
+			.header.selected .label-icon,
+			.header[completed] .label-icon {
+				color: var(--google-blue-500);
 			}
 
-			.header.selected .label-text {
+			.header.selected .label-text,
+			.header[completed] .label-text {
 				color: rgba(0, 0, 0, 0.87);
 			}
+
+			.step-number {
+				color: white;
+				background-color: rgba(0, 0, 0, 0.38);
+				border-radius: 50%;
+				line-height: 24px;
+				width: 24px;
+				height: 24px;
+				max-height: 24px;
+				max-width: 24px;
+			}
+
+			.header.selected .step-number {
+				background-color: var(--google-blue-500);
+			}
 		</style>
-		<iron-selector class="header-container" selectable=".header.selectable" selected-class="selected" selected="{{selectedStep}}">
-			<dom-repeat items="[[_steps]]">
+		<iron-selector id="selector" class="header-container" selectable=".header.selectable" selected-class="selected" selected="{{selectedStep}}"
+		  on-iron-activate="_handleStepActivate" selected-attribute="selected">
+			<dom-repeat items="[[_steps]]" mutable-data>
 				<template>
-					<div class$="[[_getHeaderClasses(item)]]">
+					<div class="header selectable" completed$="[[item.completed]]">
 						<div class="label">
-							<div class="label-icon">[[_getStepNumber(index)]]</div>
+							<div class="label-icon">
+								<dom-if if="[[item.currentIcon]]">
+									<template>
+										<iron-icon icon="[[item.currentIcon]]"></iron-icon>
+									</template>
+								</dom-if>
+								<dom-if if="[[!item.currentIcon]]">
+									<template>
+										<div class="step-number">[[_getStepNumber(index)]]</div>
+									</template>
+								</dom-if>
+							</div>
 							<div class="label-text">[[item.title]]</div>
 						</div>
 					</div>
@@ -112,7 +138,7 @@
 			 * @memberof UrDeveloper
 			 * @demo demo/index.html
 			 */
-			class UdStepperElement extends Polymer.Element {
+			class UdStepperElement extends Polymer.MutableData(Polymer.Element) {
 				static get is() {
 					return 'ud-stepper';
 				}
@@ -170,11 +196,18 @@
 
 				_prepareSteps(steps) {
 					steps.forEach((step, i) => {
-						const allowedActions = ['continue','cancel'];
-						if (i != 0 && !this.linear) {
-							allowedActions.push('back');
+						const actions = [{
+							name: 'continue'
+						}, {
+							name: 'cancel'
+						}];
+						if (!this.linear) {
+							actions.push({
+								name: 'back',
+								disabled: i === 0
+							});
 						}
-						step.allowedActions = allowedActions;
+						step.actions = actions;
 					});
 				}
 
@@ -186,15 +219,13 @@
 					return index + 1;
 				}
 
-				_getHeaderClasses(item) {
-					return 'header selectable';
-				}
-
 				_handleStepAction(evt) {
 					this[evt.detail.toLowerCase()](evt.target);
 				}
 
 				continue (step) {
+					step.completed = true;
+					this.notifyPath('_steps');
 					if (this.selectedStep < this._steps.length - 1) {
 						this.selectedStep = this.selectedStep + 1;
 					}
@@ -208,6 +239,15 @@
 
 				cancel(evt) {
 
+				}
+
+				_handleStepActivate(evt) {
+					if (this.linear) {
+						const step = this._steps[evt.detail.selected];
+						if (!step.completed || !step.editable) {
+							evt.preventDefault();
+						}
+					}
 				}
 			}
 

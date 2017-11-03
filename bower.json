@@ -7,7 +7,9 @@
     "paper-styles": "^2.0.0",
     "iron-selector": "^2.0.0",
     "iron-pages": "^2.0.0",
-    "paper-button": "^2.0.0"
+    "paper-button": "^2.0.0",
+    "iron-iconset-svg": "^2.1.0",
+    "iron-icon": "^2.0.1"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",

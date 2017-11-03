@@ -28,6 +28,7 @@
 				display: flex;
 				flex-direction: row;
 				justify-content: flex-end;
+				flex: 1;
 			}
 
 			paper-button {
@@ -82,13 +83,41 @@
 							reflectToAttribute: true
 						},
 
+						editable: {
+							type: Boolean
+						},
+
 						selected: {
 							type: Boolean,
 							reflectToAttribute: true
 						},
 
-						allowedActions: {
+						actions: {
+							type: Array
+						},
+
+						completed: {
 							type: Boolean
+						},
+
+						icon: {
+							type: String
+						},
+
+						completedIcon: {
+							type: String,
+							value: 'ud:check-circle'
+						},
+
+						editableIcon: {
+							type: String,
+							value: 'ud:edit-circle'
+						},
+
+						currentIcon: {
+							type: String,
+							computed: '_computeCurrentIcon(completed, editable)',
+							notify: true
 						},
 
 						_actionButtons: {
@@ -98,7 +127,7 @@
 				}
 
 				static get observers() {
-					return ['_updateActionsButtons(_actionButtons.*,allowedActions)']
+					return ['_updateActionsButtons(_actionButtons.*,actions)']
 				}
 
 				ready() {
@@ -113,10 +142,15 @@
 
 				_updateActionsButtons(actionButtons, allowedActions) {
 					if (!actionButtons || !allowedActions) return;
-					
+
 					this._actionButtons.forEach(ab => {
-						const dataAction = ab.getAttribute('data-action');
-						ab.disabled = this.allowedActions.indexOf(dataAction) < 0;
+						const actionName = ab.getAttribute('data-action');
+						const action = this.actions.find(a => a.name === actionName);
+						if (!action) {
+							ab.style.display = 'none';
+						} else {
+							ab.disabled = action.disabled;
+						}
 					});
 				}
 
@@ -125,6 +159,13 @@
 						detail: evt.target.getAttribute('data-action'),
 						bubbles: true
 					}));
+				}
+
+				_computeCurrentIcon(completed, editable) {
+					if (completed) {
+						return editable?this.editableIcon:this.completedIcon;
+					}
+					return this.icon;
 				}
 			}
 
