@@ -15,21 +15,58 @@
 
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
+      ud-step {
+        height: 250px;
+        --ud-step-content-style: {
+          background-color: rgba(0, 0, 0, .1);
+          padding: 5px;
+          color: rgba(0, 0, 0, 0.8);
+        }
+      }
 
+      .demo-actions {
+        display: flex;
+        flex-direction: row;
+        padding: 10px 0px 10px 0px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .demo-actions .buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+      }
+
+      .demo-actions .buttons .reset {
+        background-color: var(--paper-pink-400);
+        color: white;
+      }
+
+      .demo-actions .buttons .toggle {
+        background-color: var(--paper-indigo-400);
+        color: white;
+      }
     </style>
   </custom-style>
 </head>
 
 <body>
   <div class="vertical-section-container centered">
-    <h3>Linear Stepper</h3>
+    <div class="demo-actions">
+      <h3>Linear Stepper</h3>
+      <div class="buttons">
+        <paper-button class="reset">Reset Stepper</paper-button>
+        <paper-button class="toggle">Toggle Orientation</paper-button>
+      </div>
+    </div>
     <demo-snippet>
       <template>
-        <ud-stepper linear>
+        <ud-stepper linear vertical>
           <ud-step title="Step 1">
             <div slot="content">Step 1 Content</div>
           </ud-step>
-          <ud-step title="Step 2">
+          <ud-step title="Step 2 with long title">
             <div slot="content">Step 2 Content</div>
           </ud-step>
           <ud-step title="Step 3">
@@ -40,7 +77,13 @@
     </demo-snippet>
   </div>
   <div class="vertical-section-container centered">
-    <h3>Non-Linear Stepper</h3>
+    <div class="demo-actions">
+      <h3>Non-Linear Stepper</h3>
+      <div class="buttons">
+        <paper-button class="reset">Reset Stepper</paper-button>
+        <paper-button class="toggle">Toggle Orientation</paper-button>
+      </div>
+    </div>
     <demo-snippet>
       <template>
         <ud-stepper>
@@ -58,7 +101,13 @@
     </demo-snippet>
   </div>
   <div class="vertical-section-container centered">
-    <h3>Linear Stepper with an editable step</h3>
+    <div class="demo-actions">
+      <h3>Linear Stepper with an editable step</h3>
+      <div class="buttons">
+        <paper-button class="reset">Reset Stepper</paper-button>
+        <paper-button class="toggle">Toggle Orientation</paper-button>
+      </div>
+    </div>
     <demo-snippet>
       <template>
         <ud-stepper linear>
@@ -75,6 +124,69 @@
       </template>
     </demo-snippet>
   </div>
+  <div class="vertical-section-container centered">
+    <div class="demo-actions">
+      <h3>Linear Stepper with an optional step</h3>
+      <div class="buttons">
+        <paper-button class="reset">Reset Stepper</paper-button>
+        <paper-button class="toggle">Toggle Orientation</paper-button>
+      </div>
+    </div>
+    <demo-snippet>
+      <template>
+        <ud-stepper linear>
+          <ud-step title="Step 1">
+            <div slot="content">Step 1 Content</div>
+          </ud-step>
+          <ud-step title="Step 2" optional>
+            <div slot="content">Step 2 Content. You can skip me!</div>
+          </ud-step>
+          <ud-step title="Step 3">
+            <div slot="content">Step 3 Content</div>
+          </ud-step>
+        </ud-stepper>
+      </template>
+    </demo-snippet>
+  </div>
+  <div class="vertical-section-container centered">
+    <div class="demo-actions">
+      <h3>Linear Stepper with error state</h3>
+      <div class="buttons">
+        <paper-button class="reset">Reset Stepper</paper-button>
+        <paper-button class="toggle">Toggle Orientation</paper-button>
+      </div>
+    </div>
+    <demo-snippet>
+      <template>
+        <ud-stepper linear>
+          <ud-step title="Step 1" error>
+            <div slot="content">Step 1 Content</div>
+          </ud-step>
+          <ud-step title="Step 2">
+            <div slot="content">Step 2 Content. You can skip me!</div>
+          </ud-step>
+          <ud-step title="Step 3">
+            <div slot="content">Step 3 Content</div>
+          </ud-step>
+        </ud-stepper>
+      </template>
+    </demo-snippet>
+  </div>
+  <script>
+    window.addEventListener('WebComponentsReady', function () {
+      document.querySelectorAll('paper-button.reset').forEach(rs => {
+        rs.addEventListener('tap', (evt) => {
+          evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').reset();
+        });
+      });
+
+      document.querySelectorAll('paper-button.toggle').forEach(rs => {
+        rs.addEventListener('tap', (evt) => {
+          evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').toggleOrientation();
+        });
+      });
+    });
+  </script>
 </body>
 
 </html>

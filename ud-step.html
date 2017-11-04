@@ -4,178 +4,252 @@
 <link rel="import" href="../paper-styles/typography.html">
 
 <dom-module id="ud-step">
-	<template>
-		<style include="paper-material-styles">
-			:host {
-				display: flex;
-				flex-direction: column;
-				@apply --paper-material-elevation-1;
-			}
+  <template>
+    <style include="paper-material-styles">
+       :host {
+        display: flex;
+        flex-direction: column;
+      }
 
-			#content {
-				margin: 24px;
-			}
+      #content {
+        flex: 1;
+        @apply --ud-step-content-style;
+        margin: 24px 24px 16px 24px;
+      }
 
-			#actions {
-				padding: 24px;
-				display: flex;
-				flex-direction: row;
-				flex-wrap: nowrap;
-				justify-content: space-between;
-			}
+      #actions {
+        padding: 0px 24px 8px 24px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+        height: 48px;
+      }
 
-			.linear-actions {
-				display: flex;
-				flex-direction: row;
-				justify-content: flex-end;
-				flex: 1;
-			}
+      .linear-actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        flex: 1;
+      }
 
-			paper-button {
-				@apply --paper-font-button;
-				color: rgba(0, 0, 0, 0.83);
-			}
+      paper-button {
+        @apply --paper-font-button;
+        color: rgba(0, 0, 0, 0.83);
+      }
 
-			.continue-btn {
-				color: var(--google-blue-500);
-			}
+      .continue-btn {
+        color: var(--google-blue-500);
+      }
 
-			paper-button[disabled] {
-				color: rgba(0, 0, 0, 0.50);
-				background-color: transparent;
-			}
-		</style>
-		<div id="content">
-			<slot name="content"></slot>
-		</div>
-		<div id="actions">
-			<slot name="actions" id="actionsSlot">
-				<paper-button data-action="back" class="back-btn">Back</paper-button>
-				<div class="linear-actions">
-					<paper-button data-action="cancel">Cancel</paper-button>
-					<paper-button data-action="continue" class="continue-btn">Continue</paper-button>
-				</div>
-			</slot>
-		</div>
-	</template>
-	<script>
-		{
-			/**
-			 * `ud-step`
-			 * Material Design Step
-			 *
-			 * @customElement
-			 * @polymer
-			 * @memberof UrDeveloper
-			 */
-			class UdStepElement extends Polymer.Element {
-				static get is() {
-					return 'ud-step';
-				}
+      paper-button[disabled] {
+        color: rgba(0, 0, 0, 0.50);
+        background-color: transparent;
+      }
+    </style>
+    <div id="content">
+      <slot name="content"></slot>
+    </div>
+    <div id="actions">
+      <slot name="actions" id="actionsSlot">
+        <paper-button data-action="back" class="back-btn">Back</paper-button>
+        <paper-button data-action="skip" class="back-btn">Skip</paper-button>
+        <div class="linear-actions">
+          <paper-button data-action="cancel">Cancel</paper-button>
+          <paper-button data-action="continue" class="continue-btn">Continue</paper-button>
+        </div>
+      </slot>
+    </div>
+  </template>
+  <script>
+    {
+      /**
+       * `ud-step`
+       * Material Design Step
+       *
+       * @customElement
+       * @polymer
+       * @memberof UrDeveloper
+       */
+      class UdStepElement extends Polymer.Element {
+        static get is() {
+          return 'ud-step';
+        }
 
-				static get properties() {
-					return {
-						/**
-						 * Step title
-						 */
-						title: {
-							type: String,
-							reflectToAttribute: true
-						},
+        static get properties() {
+          return {
+            /**
+             * Step title
+             */
+            title: {
+              type: String,
+              reflectToAttribute: true
+            },
+            /**
+             * Makes the step editable which in linear stepper user can go back to it.
+             */
+            editable: {
+              type: Boolean
+            },
+            /**
+             * Makes the step optional which allows user to skip it.
+             */
+            optional: {
+              type: Boolean
+            },
 
-						editable: {
-							type: Boolean
-						},
+            /**
+             * Determines if the this is the current step in stepper.
+             */
+            selected: {
+              type: Boolean,
+              reflectToAttribute: true
+            },
 
-						selected: {
-							type: Boolean,
-							reflectToAttribute: true
-						},
+            /**
+             * Determines if the step is completed.
+             */
+            completed: {
+              type: Boolean,
+              notify: true
+            },
 
-						actions: {
-							type: Array
-						},
+            /**
+            * Available actions for the step
+            */
+            actions: {
+              type: Array
+            },
 
-						completed: {
-							type: Boolean
-						},
+            /**
+             * Step icon when it's not completed yet. 
+             * If not specified, a step number will be shown instead.
+             */
+            icon: {
+              type: String
+            },
 
-						icon: {
-							type: String
-						},
+            /**
+             * Step icon when it's completed.
+             */
+            completedIcon: {
+              type: String,
+              value: 'ud:check-circle'
+            },
 
-						completedIcon: {
-							type: String,
-							value: 'ud:check-circle'
-						},
+            /**
+             * Editable step icon
+             */
+            editableIcon: {
+              type: String,
+              value: 'ud:edit-circle'
+            },
 
-						editableIcon: {
-							type: String,
-							value: 'ud:edit-circle'
-						},
+            /**
+             * The icon will be shown when the step is in invalid state.
+             */
+            errorIcon: {
+              type: String,
+              value: 'ud:warning'
+            },
 
-						currentIcon: {
-							type: String,
-							computed: '_computeCurrentIcon(completed, editable)',
-							notify: true
-						},
+            /**
+            * Text for an optional step.
+            */
+            optionalText: {
+              type: String,
+              value: 'Optional'
+            },
 
-						_actionButtons: {
-							type: Array
-						}
-					}
-				}
+            /**
+            * Indicates if the step is in error state. 
+            * In a linear stepper, user cannot continue with an error state.
+            */
+            error: {
+              type: Boolean,
+              observer: '_errorChanged',
+              reflectToAttribute: true
+            },
 
-				static get observers() {
-					return ['_updateActionsButtons(_actionButtons.*,actions)']
-				}
+            _currentIcon: {
+              type: String,
+              computed: '_computeCurrentIcon(completed, editable, error)',
+              notify: true
+            },
 
-				ready() {
-					super.ready();
-					this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsSlot, (info) => {
-						this._actionButtons = Array.from(info.target.querySelectorAll('[data-action]'));
-						this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
-							ab.addEventListener('tap', (evt) => this._handleAction(evt));
-						});
-					});
-				}
+            _actionButtons: {
+              type: Array
+            }
+          }
+        }
 
-				_updateActionsButtons(actionButtons, allowedActions) {
-					if (!actionButtons || !allowedActions) return;
+        static get observers() {
+          return ['_updateActionsButtons(_actionButtons.*,actions)']
+        }
 
-					this._actionButtons.forEach(ab => {
-						const actionName = ab.getAttribute('data-action');
-						const action = this.actions.find(a => a.name === actionName);
-						if (!action) {
-							ab.style.display = 'none';
-						} else {
-							ab.disabled = action.disabled;
-						}
-					});
-				}
+        ready() {
+          super.ready();
+          this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsSlot, (info) => {
+            this._actionButtons = Array.from(info.target.querySelectorAll('[data-action]'));
+            this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
+              ab.addEventListener('tap', (evt) => this._handleAction(evt));
+            });
+          });
+        }
 
-				_handleAction(evt) {
-					this.dispatchEvent(new CustomEvent('step-action', {
-						detail: evt.target.getAttribute('data-action'),
-						bubbles: true
-					}));
-				}
+        _updateActionsButtons(actionButtons, allowedActions) {
+          if (!actionButtons.base || !allowedActions) return;
 
-				_computeCurrentIcon(completed, editable) {
-					if (completed) {
-						return editable?this.editableIcon:this.completedIcon;
-					}
-					return this.icon;
-				}
-			}
+          this._actionButtons.forEach(ab => {
+            const actionName = ab.getAttribute('data-action');
+            const action = this.actions.find(a => a.name === actionName);
+            if (!action) {
+              ab.style.display = 'none';
+            } else {
+              ab.disabled = action.disabled;
+            }
+          });
+        }
 
-			window.customElements.define(UdStepElement.is, UdStepElement);
+        _handleAction(evt) {
+          this.dispatchEvent(new CustomEvent('step-action', {
+            detail: evt.target.getAttribute('data-action'),
+            bubbles: true
+          }));
+        }
 
-			/**
-			 * @namespace
-			 */
-			window.UrDeveloper = window.UrDeveloper || {};
-			UrDeveloper.UdStepElement = UdStepElement;
-		}
-	</script>
+        _computeCurrentIcon(completed, editable, error) {
+          if (error) return this.errorIcon;
+
+          if (completed) {
+            return editable ? this.editableIcon : this.completedIcon;
+          }
+          return this.icon;
+        }
+
+        _errorChanged(invalid) {
+          this.dispatchEvent(new CustomEvent('step-error', {
+            detail: {
+              stpe: this
+            },
+            bubbles: true
+          }));
+        }
+
+        _reset() {
+          this.completed = false;
+        }
+      }
+
+      window.customElements.define(UdStepElement.is, UdStepElement);
+
+      /**
+       * @namespace
+       */
+      window.UrDeveloper = window.UrDeveloper || {};
+      UrDeveloper.UdStepElement = UdStepElement;
+    }
+  </script>
 </dom-module>
