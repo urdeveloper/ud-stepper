@@ -6,7 +6,7 @@
 <dom-module id="ud-step">
   <template>
     <style include="paper-material-styles">
-       :host {
+      :host {
         display: flex;
         flex-direction: column;
       }
@@ -41,7 +41,7 @@
       }
 
       .continue-btn {
-        color: var(--google-blue-500);
+        color: var(--ud-step-continute-btn-color, var(--google-blue-500));
       }
 
       paper-button[disabled] {
@@ -88,6 +88,13 @@
               reflectToAttribute: true
             },
             /**
+             * Step summary that apears under the title
+             */
+             summary: {
+              type: String,
+              reflectToAttribute: true
+            },
+            /**
              * Makes the step editable which in linear stepper user can go back to it.
              */
             editable: {
@@ -105,7 +112,8 @@
              */
             selected: {
               type: Boolean,
-              reflectToAttribute: true
+              reflectToAttribute: true,
+              notify: true
             },
 
             /**

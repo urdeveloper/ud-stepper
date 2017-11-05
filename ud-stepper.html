@@ -13,7 +13,7 @@
 <dom-module id="ud-stepper">
   <template>
     <style include="paper-material-styles">
-       :host {
+      :host {
         display: flex;
         flex-direction: column;
       }
@@ -24,8 +24,9 @@
 
         flex-wrap: nowrap;
         align-items: center;
-        @apply --paper-material-elevation-1;
+        @apply --ud-stepper-header-container-style;
       }
+
       /* Horizontal Styles */
 
       .header {
@@ -35,11 +36,11 @@
         overflow: hidden;
       }
 
-       :host(:not([vertical])) .header:not(:last-of-type) {
+      :host(:not([vertical])) .header:not(:last-of-type) {
         flex: 1;
       }
 
-       :host(:not([vertical])) .header:not(:last-of-type)::after {
+      :host(:not([vertical])) .header:not(:last-of-type)::after {
         content: '';
         position: relative;
         flex: 1;
@@ -75,18 +76,19 @@
         color: rgba(0, 0, 0, 0.54);
       }
 
-      .label-text .optional {
+      .label-text .optional,
+      .label-text .summary {
         @apply --paper-font-caption;
       }
 
-       :host(:not([vertical])) .label-text .main {
+      :host(:not([vertical])) .label-text .main {
         @apply --paper-font-common-nowrap;
         max-width: 120px;
       }
 
       .header.selected .label-icon,
       .header[completed] .label-icon {
-        color: var(--google-blue-500);
+        color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
       }
 
       .header.selected .label-text,
@@ -111,34 +113,28 @@
       }
 
       .header.selected .step-number {
-        background-color: var(--google-blue-500);
+        background-color: var(--ud-stepper-icon-seleced-color, var(--google-blue-500));
       }
+
       /* Vertical Styles */
 
-       :host([vertical]) .header-container {
+      :host([vertical]) .header-container {
         flex-direction: column;
         flex-wrap: nowrap;
         align-items: stretch;
-        @apply --paper-material-elevation-1;
       }
 
-       :host([vertical]) .header {
+      :host([vertical]) .header {
         flex-direction: column;
         justify-content: flex-start;
         overflow: visible;
       }
 
-       :host([vertical]) .label {
+      :host([vertical]) .label {
         flex: 1;
       }
 
-       :host(:not([vertical])) ::slotted(ud-step) {
-        @apply --paper-material-elevation-1;
-        /* padding: 24px 24px 0px 24px; */
-      }
-
-       :host([vertical]) .vertical-step ::slotted(ud-step) {
-        /*padding: 8px 24px 0px 0px;*/
+      :host([vertical]) .vertical-step ::slotted(ud-step) {
         flex: 1;
       }
 
@@ -159,11 +155,11 @@
         background-color: rgba(0, 0, 0, 0.1);
       }
 
-       :host([vertical]) .header .label {
+      :host([vertical]) .header .label {
         padding: 24px 24px 16px 24px;
       }
 
-       ::slotted(ud-step:not([selected])) {
+      ::slotted(ud-step:not([selected])) {
         display: none;
       }
 
@@ -191,6 +187,7 @@
               </div>
               <div class="label-text">
                 <div class="main">[[item.title]]</div>
+                <div class="summary">[[item.summary]]</div>
                 <dom-if if="[[item.optional]]">
                   <template>
                     <div class="optional">[[item.optionalText]]</div>
@@ -353,8 +350,16 @@
           }
         }
 
+        /**
+        * Go to the next available step
+        */
+        next() {
+          if (!this._steps) return;
+          this.continue(this._steps[this.selectedStep]);
+        }
+
         /** @protected */
-        continue (step) {
+        continue(step) {
           if (this.linear && step.error) return;
           step.completed = true;
           this.notifyPath('_steps');
