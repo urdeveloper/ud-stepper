@@ -52,15 +52,21 @@
     <div id="content">
       <slot name="content"></slot>
     </div>
-    <div id="actions">
-      <slot name="actions" id="actionsSlot">
-        <paper-button data-action="back" class="back-btn">Back</paper-button>
-        <paper-button data-action="skip" class="back-btn">Skip</paper-button>
-        <div class="linear-actions">
-          <paper-button data-action="cancel">Cancel</paper-button>
-          <paper-button data-action="continue" class="continue-btn">Continue</paper-button>
-        </div>
-      </slot>
+    <div id="actionsBar">
+      <dom-if if="[[!hideActions]]">
+        <template>
+          <div id="actions">
+            <slot name="actions" id="actionsSlot">
+              <paper-button data-action="back" class="back-btn">Back</paper-button>
+              <paper-button data-action="skip" class="back-btn">Skip</paper-button>
+              <div class="linear-actions">
+                <paper-button data-action="cancel">Cancel</paper-button>
+                <paper-button data-action="continue" class="continue-btn">Continue</paper-button>
+              </div>
+            </slot>
+          </div>
+        </template>
+      </dom-if>
     </div>
   </template>
   <script>
@@ -90,7 +96,7 @@
             /**
              * Step summary that apears under the title
              */
-             summary: {
+            summary: {
               type: String,
               reflectToAttribute: true
             },
@@ -181,6 +187,15 @@
               reflectToAttribute: true
             },
 
+            /**
+            * Hide the actions bar
+            */
+            hideActions: {
+              type: Boolean,
+              reflectToAttribute: true,
+              value: false
+            },
+
             _currentIcon: {
               type: String,
               computed: '_computeCurrentIcon(completed, editable, error)',
@@ -199,7 +214,8 @@
 
         ready() {
           super.ready();
-          this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsSlot, (info) => {
+          if (this.hideActions) return;
+          this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsBar, (info) => {
             this._actionButtons = Array.from(info.target.querySelectorAll('[data-action]'));
             this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
               ab.addEventListener('tap', (evt) => this._handleAction(evt));
