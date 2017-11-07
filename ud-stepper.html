@@ -279,7 +279,9 @@
               info.removedNodes.filter(this._isStep).length > 0) {
               this._steps = this._findSteps();
               this._prepareSteps(this._steps);
-              this.selectedStep = 0;
+              if (!this.selectedStep) {
+                this.selectedStep = 0;
+              }
             }
           });
         }
