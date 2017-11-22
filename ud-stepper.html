@@ -1,9 +1,16 @@
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../paper-styles/element-styles/paper-material-styles.html">
+<link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../iron-selector/iron-selector.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../polymer/lib/mixins/mutable-data.html">
 
-<dom-module id="ud-step">
+<link rel="import" href="ud-step.html">
+<link rel="import" href="ud-iconset.html">
+
+<dom-module id="ud-stepper">
   <template>
     <style include="paper-material-styles">
       :host {
@@ -11,275 +18,432 @@
         flex-direction: column;
       }
 
-      #content {
-        flex: 1;
-        @apply --ud-step-content-style;
-        margin: 24px 24px 16px 24px;
-      }
-
-      #actions {
-        padding: 0px 24px 8px 24px;
+      .header-container {
         display: flex;
         flex-direction: row;
+
         flex-wrap: nowrap;
-        justify-content: space-between;
         align-items: center;
-        height: 48px;
+        @apply --ud-stepper-header-container-style;
       }
 
-      #actions ::slotted(.linear-actions),
-      .linear-actions {
+      /* Horizontal Styles */
+
+      .header {
         display: flex;
         flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      :host(:not([vertical])) .header:not(:last-of-type) {
         flex: 1;
       }
 
-      paper-button,
-      #actions ::slotted(paper-button) {
-        @apply --paper-font-button;
-        color: rgba(0, 0, 0, 0.83);
+      :host(:not([vertical])) .header:not(:last-of-type)::after {
+        content: '';
+        position: relative;
+        flex: 1;
+        top: 36px;
+        height: 1px;
+        margin-left: -12px;
+        width: 200px;
+        background-color: rgba(0, 0, 0, 0.1);
       }
 
-      .continue-btn,
-      #actions ::slotted(.continue-btn) {
-        color: var(--ud-step-continute-btn-color, var(--google-blue-500));
+      .header .label {
+        display: flex;
+        flex-direction: row;
+        cursor: pointer;
+        align-items: center;
+        padding: 24px 24px 24px 24px;
       }
 
-      paper-button[disabled],
-      #actions ::slotted(paper-button[disabled]) {
-        color: rgba(0, 0, 0, 0.50);
-        background-color: transparent;
+      .header .label:hover {
+        background-color: #f0f0f0;
+      }
+
+      .label-icon {
+        color: rgba(0, 0, 0, 0.38);
+        @apply --paper-font-caption;
+        text-align: center;
+        line-height: 24px;
+      }
+
+      .label-text {
+        @apply --paper-font-body2;
+        padding-left: 8px;
+        color: rgba(0, 0, 0, 0.54);
+      }
+
+      .label-text .optional,
+      .label-text .summary {
+        @apply --paper-font-caption;
+      }
+
+      :host(:not([vertical])) .label-text .main {
+        @apply --paper-font-common-nowrap;
+        max-width: 120px;
+      }
+
+      .header.selected .label-icon,
+      .header[completed] .label-icon {
+        color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
+      }
+
+      .header.selected .label-text,
+      .header[completed] .label-text {
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .header[error] .label-text,
+      .header[error] .label-icon {
+        color: var(--paper-deep-orange-a700);
+      }
+
+      .step-number {
+        color: white;
+        background-color: rgba(0, 0, 0, 0.38);
+        border-radius: 50%;
+        line-height: 24px;
+        width: 24px;
+        height: 24px;
+        max-height: 24px;
+        max-width: 24px;
+      }
+
+      .header.selected .step-number {
+        background-color: var(--ud-stepper-icon-seleced-color, var(--google-blue-500));
+      }
+
+      /* Vertical Styles */
+
+      :host([vertical]) .header-container {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+      }
+
+      :host([vertical]) .header {
+        flex-direction: column;
+        justify-content: flex-start;
+        overflow: visible;
+      }
+
+      :host([vertical]) .label {
+        flex: 1;
+      }
+
+      :host([vertical]) .vertical-step ::slotted(ud-step) {
+        flex: 1;
+      }
+
+      .vertical-step {
+        padding-left: 32px;
+        display: flex;
+        flex-flow: row;
+        align-items: stretch;
+      }
+
+      .header:not(:last-of-type) .vertical-step::before {
+        content: '';
+        position: relative;
+        width: 1px;
+        left: 3px;
+        margin-top: -10px;
+        margin-bottom: -16px;
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      :host([vertical]) .header .label {
+        padding: 24px 24px 16px 24px;
+      }
+
+      ::slotted(ud-step:not([selected])) {
+        display: none;
+      }
+
+      .vertical-step ::slotted(ud-step:not([selected])) {
+        display: none;
       }
     </style>
-    <div id="content">
-      <slot name="content"></slot>
-    </div>
-    <div id="actionsBar">
-      <dom-if if="[[!hideActions]]">
+    <iron-selector id="selector" class="header-container" selectable=".header.selectable" selected-class="selected" selected="{{selectedStep}}"
+      on-iron-activate="_handleStepActivate" selected-attribute="selected">
+      <dom-repeat items="[[_steps]]" mutable-data>
         <template>
-          <div id="actions">
-            <slot name="actions" id="actionsSlot">
-              <paper-button data-action="back" class="back-btn">Back</paper-button>
-              <paper-button data-action="skip" class="back-btn">Skip</paper-button>
-            </slot>
-            <div class="linear-actions">
-              <slot name="linear-actions">
-                <paper-button data-action="cancel">Cancel</paper-button>
-                <paper-button data-action="continue" class="continue-btn">Continue</paper-button>
-              </slot>
+          <div class="header selectable" completed$="[[item.completed]]" error$="[[item.error]]">
+            <div class="label">
+              <div class="label-icon">
+                <dom-if if="[[item._currentIcon]]">
+                  <template>
+                    <iron-icon icon="[[item._currentIcon]]"></iron-icon>
+                  </template>
+                </dom-if>
+                <dom-if if="[[!item._currentIcon]]">
+                  <template>
+                    <div class="step-number">[[_getStepNumber(index)]]</div>
+                  </template>
+                </dom-if>
+              </div>
+              <div class="label-text">
+                <div class="main">[[item.title]]</div>
+                <div class="summary">[[item.summary]]</div>
+                <dom-if if="[[item.optional]]">
+                  <template>
+                    <div class="optional">[[item.optionalText]]</div>
+                  </template>
+                </dom-if>
+              </div>
             </div>
+            <dom-if if="[[vertical]]" restamp>
+              <template>
+                <div class="vertical-step step-container" visible$="[[item.selected]]">
+                  <slot name="slot[[index]]"></slot>
+                </div>
+              </template>
+            </dom-if>
+          </div>
           </div>
         </template>
-      </dom-if>
-    </div>
+      </dom-repeat>
+    </iron-selector>
+    <dom-if if="[[!vertical]]" restamp>
+      <template>
+        <slot name="horizontal"></slot>
+        </div>
+      </template>
+    </dom-if>
   </template>
+
   <script>
     {
       /**
-       * `ud-step`
-       * Material Design Step
+       * `ud-stepper`
+       * Material Design Stepper
        *
        * @customElement
        * @polymer
        * @memberof UrDeveloper
+       * @demo demo/index.html
        */
-      class UdStepElement extends Polymer.Element {
+      class UdStepperElement extends Polymer.MutableData(Polymer.Element) {
         static get is() {
-          return 'ud-step';
+          return 'ud-stepper';
         }
 
         static get properties() {
           return {
-            /**
-             * Step title
-             */
-            title: {
-              type: String,
-              reflectToAttribute: true
-            },
-            /**
-             * Step summary that apears under the title
-             */
-            summary: {
-              type: String,
-              reflectToAttribute: true
-            },
-            /**
-             * Makes the step editable which in linear stepper user can go back to it.
-             */
-            editable: {
-              type: Boolean
-            },
-            /**
-             * Makes the step optional which allows user to skip it.
-             */
-            optional: {
-              type: Boolean
-            },
 
             /**
-             * Determines if the this is the current step in stepper.
+             * Determines if the stepper is vertical.
              */
-            selected: {
+            vertical: {
               type: Boolean,
-              reflectToAttribute: true,
-              notify: true
+              value: false,
+              reflectToAttribute: Boolean
             },
 
             /**
-             * Determines if the step is completed.
+             * Determines if the stepper is linear.
              */
+            linear: {
+              type: Boolean,
+              reflectToAttribute: Boolean
+            },
+
+            _steps: {
+              type: Array
+            },
+
+            selectedStep: {
+              type: Boolean,
+              notify: true,
+              observer: '_selectionChanged'
+            },
+
             completed: {
               type: Boolean,
-              notify: true
-            },
-
-            /**
-            * Available actions for the step
-            */
-            actions: {
-              type: Array
-            },
-
-            /**
-             * Step icon when it's not completed yet. 
-             * If not specified, a step number will be shown instead.
-             */
-            icon: {
-              type: String
-            },
-
-            /**
-             * Step icon when it's completed.
-             */
-            completedIcon: {
-              type: String,
-              value: 'ud:check-circle'
-            },
-
-            /**
-             * Editable step icon
-             */
-            editableIcon: {
-              type: String,
-              value: 'ud:edit-circle'
-            },
-
-            /**
-             * The icon will be shown when the step is in invalid state.
-             */
-            errorIcon: {
-              type: String,
-              value: 'ud:warning'
-            },
-
-            /**
-            * Text for an optional step.
-            */
-            optionalText: {
-              type: String,
-              value: 'Optional'
-            },
-
-            /**
-            * Indicates if the step is in error state. 
-            * In a linear stepper, user cannot continue with an error state.
-            */
-            error: {
-              type: Boolean,
-              observer: '_errorChanged',
-              reflectToAttribute: true
-            },
-
-            /**
-            * Hide the actions bar
-            */
-            hideActions: {
-              type: Boolean,
-              reflectToAttribute: true,
-              value: false
-            },
-
-            _currentIcon: {
-              type: String,
-              computed: '_computeCurrentIcon(completed, editable, error)',
-              notify: true
-            },
-
-            _actionButtons: {
-              type: Array
+              notifyPath: Boolean
             }
-          }
+          };
         }
 
         static get observers() {
-          return ['_updateActionsButtons(_actionButtons.*,actions)']
+          return ['_setSlotNames(_steps,vertical)']
+        }
+
+        constructor() {
+          super();
+          this._templateObserver = new Polymer.FlattenedNodesObserver(this, info => {
+            if (info.addedNodes.filter(this._isStep).length > 0 ||
+              info.removedNodes.filter(this._isStep).length > 0) {
+              this._steps = this._findSteps();
+              this._prepareSteps(this._steps);
+              if (!this.selectedStep) {
+                this.selectedStep = 0;
+              }
+            }
+          });
         }
 
         ready() {
           super.ready();
-          if (this.hideActions) return;
-          this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsBar, (info) => {
-            this._actionButtons = Array.from(info.target.querySelectorAll('[data-action]'));
-            this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
-              ab.addEventListener('tap', (evt) => this._handleAction(evt));
-            });
+          this.addEventListener('step-action', evt => this._handleStepAction(evt));
+          this.addEventListener('step-error', evt => {
+            this.notifyPath('_steps')
           });
         }
 
-        _updateActionsButtons(actionButtons, allowedActions) {
-          if (!actionButtons.base || !allowedActions) return;
+        _findSteps() {
+          return Array.from(this.querySelectorAll('ud-step'));
+        }
 
-          this._actionButtons.forEach(ab => {
-            const actionName = ab.getAttribute('data-action');
-            const action = this.actions.find(a => a.name === actionName);
-            if (!action) {
-              ab.style.display = 'none';
-            } else {
-              ab.disabled = action.disabled;
+        _prepareSteps(steps) {
+          steps.forEach((step, i) => {
+            //By default all steps have continue and cancel action
+            const actions = [{
+              name: 'continue'
+            }, {
+              name: 'cancel'
+            }];
+            if (!this.linear) {
+              //Disable the back for the first step
+              actions.push({
+                name: 'back',
+                disabled: i === 0
+              })
+            } else if (step.optional) {
+              //In linear stepper, optional step has a skip action
+              actions.push({
+                name: 'skip'
+              });
             }
+            step.actions = actions;
           });
         }
 
-        _handleAction(evt) {
-          this.dispatchEvent(new CustomEvent('step-action', {
-            detail: evt.target.getAttribute('data-action'),
-            bubbles: true
-          }));
+        _isStep(node) {
+          return node.nodeType === Node.ELEMENT_NODE && /ud-step/i.test(node.localName);
         }
 
-        _computeCurrentIcon(completed, editable, error) {
-          if (error) return this.errorIcon;
+        _getStepNumber(index) {
+          return index + 1;
+        }
 
-          if (completed) {
-            return editable ? this.editableIcon : this.completedIcon;
+        _handleStepAction(evt) {
+          this[evt.detail.toLowerCase()](evt.target);
+        }
+
+        _findNextStep(currentStep) {
+          if (currentStep == this._steps.length - 1) return currentStep;
+          //if it's a linear stepper, find the next not completed or editable step
+          if (this.linear) {
+            let index = currentStep + 1;
+            while (index < this._steps.length - 1) {
+              let step = this._steps[index];
+              if (step.editable || !step.completed) {
+                return index;
+              }
+              index++;
+            }
+            return index;
+          } else {
+            return currentStep + 1;
           }
-          return this.icon;
         }
 
-        _errorChanged(invalid) {
-          this.dispatchEvent(new CustomEvent('step-error', {
-            detail: {
-              stpe: this
-            },
-            bubbles: true
-          }));
+        /**
+        * Go to the next available step
+        */
+        next() {
+          if (!this._steps) return;
+          this.continue(this._steps[this.selectedStep]);
         }
 
-        _reset() {
-          this.completed = false;
+        /** @protected */
+        continue(step) {
+          if (this.linear && step.error) return;
+          step.completed = true;
+          this.notifyPath('_steps');
+          this.selectedStep = this._findNextStep(this.selectedStep);
+          this.completed = this.selectedStep === this._steps.length - 1;
+        }
+
+        /** @protected */
+        back(step) {
+          if (this.selectedStep > 0) {
+            this.selectedStep = this.selectedStep - 1;
+          }
+        }
+
+        /** @protected */
+        skip(step) {
+          this.selectedStep = this._findNextStep(this.selectedStep);
+          this.completed = this.selectedStep === this._steps.length - 1;
+        }
+
+        /** @protected */
+        cancel(step) {
+
+        }
+
+
+        /**
+         * Reset the stepper and all its steps to the initial state.
+         */
+        reset() {
+          this.selectedStep = 0;
+          this._steps.forEach(s => s._reset());
+          this.notifyPath('_steps');
+        }
+
+        /**
+         * Toggle the orientation between horizontal and vertical
+         */
+        toggleOrientation() {
+          this.vertical = !this.vertical;
+        }
+
+        _handleStepActivate(evt) {
+          /*
+           * the logic here:
+           * User is allowed to select any step if stepper is not linear
+           * If stepper is linear: 
+           *  - allow user to revisit a completed editable step
+           *  - allow user to revist an optional step as long as is not completed
+           */
+          if (this.linear) {
+            const step = this._steps[evt.detail.selected];
+            if ((step.completed && step.editable) || (!step.completed && step.optional)) {
+              return;
+            }
+            evt.preventDefault();
+          }
+        }
+
+        _setSlotNames(steps, vertical) {
+          if (!this._steps) return;
+          steps.forEach((step, i) => {
+            step.setAttribute('slot', this.vertical ? 'slot' + i : 'horizontal');
+          });
+        }
+
+        _selectionChanged(selectedStep) {
+
+          this._steps.forEach((step, i) => {
+            step.selected = i == selectedStep;
+          })
+
         }
       }
 
-      window.customElements.define(UdStepElement.is, UdStepElement);
+      window.customElements.define(UdStepperElement.is, UdStepperElement);
 
       /**
        * @namespace
        */
       window.UrDeveloper = window.UrDeveloper || {};
-      UrDeveloper.UdStepElement = UdStepElement;
+      UrDeveloper.UdStepperElement = UdStepperElement;
     }
   </script>
 </dom-module>
