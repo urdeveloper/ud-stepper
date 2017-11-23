@@ -27,6 +27,10 @@
         height: 48px;
       }
 
+      :host[hide-actions] #actions {
+        display: none;
+      }
+
       #actions ::slotted(.linear-actions),
       .linear-actions {
         display: flex;
@@ -56,23 +60,17 @@
     <div id="content">
       <slot name="content"></slot>
     </div>
-    <div id="actionsBar">
-      <dom-if if="[[!hideActions]]">
-        <template>
-          <div id="actions">
-            <slot name="actions" id="actionsSlot">
-              <paper-button data-action="back" class="back-btn">Back</paper-button>
-              <paper-button data-action="skip" class="back-btn">Skip</paper-button>
-            </slot>
-            <div class="linear-actions">
-              <slot name="linear-actions">
-                <paper-button data-action="cancel">Cancel</paper-button>
-                <paper-button data-action="continue" class="continue-btn">Continue</paper-button>
-              </slot>
-            </div>
-          </div>
-        </template>
-      </dom-if>
+    <div id="actions">
+      <slot name="actions" id="actionsSlot">
+        <paper-button data-action="back" class="back-btn">Back</paper-button>
+        <paper-button data-action="skip" class="back-btn">Skip</paper-button>
+      </slot>
+      <div class="linear-actions">
+        <slot name="linear-actions" id="linearActionsSlot">
+          <paper-button data-action="cancel">Cancel</paper-button>
+          <paper-button data-action="continue" class="continue-btn">Continue</paper-button>
+        </slot>
+      </div>
     </div>
   </template>
   <script>
@@ -215,24 +213,39 @@
         }
 
         static get observers() {
-          return ['_updateActionsButtons(_actionButtons.*,actions)']
+          return ['_updateActionsButtons(_actionButtons.*,_linearActionButtons.*,actions)']
         }
 
         ready() {
           super.ready();
-          if (this.hideActions) return;
-          this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsBar, (info) => {
-            this._actionButtons = Array.from(info.target.querySelectorAll('[data-action]'));
-            this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
-              ab.addEventListener('tap', (evt) => this._handleAction(evt));
-            });
-          });
         }
 
-        _updateActionsButtons(actionButtons, allowedActions) {
-          if (!actionButtons.base || !allowedActions) return;
+        connectedCallback() {
+          super.connectedCallback();
+          if (this.hideActions) return;
+          if (this.$.actionsSlot) {
+            this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsSlot, (info) => {
+              this._actionButtons = Array.from(info.addedNodes.filter(n=>n.nodeType === Node.ELEMENT_NODE && n.hasAttribute("data-action")));
+              this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
+                ab.addEventListener('tap', (evt) => this._handleAction(evt));
+              });
+            });
+          }
 
-          this._actionButtons.forEach(ab => {
+          if (this.$.linearActionsSlot) {
+            this._nodeObserver1 = new Polymer.FlattenedNodesObserver(this.$.linearActionsSlot, (info) => {
+              this._linearActionButtons = Array.from(info.addedNodes.filter(n=>n.nodeType === Node.ELEMENT_NODE && n.hasAttribute("data-action")));
+              this._linearActionButtons.filter(ab => !ab._hooked).forEach(ab => {
+                ab.addEventListener('tap', (evt) => this._handleAction(evt));
+              });
+            });
+          }
+        }
+
+        _updateActionsButtons(actionButtons, linearActionButtons, allowedActions) {
+          if (!allowedActions) return;
+          let actionBtns = (actionButtons.base || []).concat(linearActionButtons.base || []);
+          actionBtns.forEach(ab => {
             const actionName = ab.getAttribute('data-action');
             const action = this.actions.find(a => a.name === actionName);
             if (!action) {
