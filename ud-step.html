@@ -118,10 +118,11 @@
             },
 
             /**
-             * Determines if the this is the current step in stepper.
+             * Determines if this is the current step in stepper.
              */
             selected: {
               type: Boolean,
+              readonly: true,
               reflectToAttribute: true,
               notify: true
             },
@@ -131,6 +132,7 @@
              */
             completed: {
               type: Boolean,
+              readonly: true,
               notify: true
             },
 
@@ -158,7 +160,7 @@
             },
 
             /**
-             * Editable step icon
+             * Step icon when it's editable.
              */
             editableIcon: {
               type: String,
@@ -166,7 +168,7 @@
             },
 
             /**
-             * The icon will be shown when the step is in invalid state.
+             * The icon that will be shown when the step is in invalid state.
              */
             errorIcon: {
               type: String,
@@ -289,7 +291,7 @@
       window.customElements.define(UdStepElement.is, UdStepElement);
 
       /**
-       * @namespace
+       * @namespace UrDeveloper
        */
       window.UrDeveloper = window.UrDeveloper || {};
       UrDeveloper.UdStepElement = UdStepElement;

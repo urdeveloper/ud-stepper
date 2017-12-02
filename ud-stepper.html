@@ -167,7 +167,7 @@
         display: none;
       }
     </style>
-    <iron-selector id="selector" class="header-container" selectable=".header.selectable" selected-class="selected" selected="{{selectedStep}}"
+    <iron-selector id="selector" class="header-container" selectable=".header.selectable" selected-class="selected" selected="{{selected}}"
       on-iron-activate="_handleStepActivate" selected-attribute="selected">
       <dom-repeat items="[[_steps]]" mutable-data>
         <template>
@@ -235,7 +235,7 @@
           return {
 
             /**
-             * Determines if the stepper is vertical.
+             * If true, the stepper becomes vertical.
              */
             vertical: {
               type: Boolean,
@@ -244,7 +244,7 @@
             },
 
             /**
-             * Determines if the stepper is linear.
+             * If true, the stepper becomes linear.
              */
             linear: {
               type: Boolean,
@@ -255,14 +255,21 @@
               type: Array
             },
 
-            selectedStep: {
-              type: Boolean,
+            /**
+            * Gets or sets the currently selected step index (zero based).
+            **/
+            selected: {
+              type: String,
               notify: true,
               observer: '_selectionChanged'
             },
 
+            /**
+            * Determines if the stepper is compeleted.
+            **/
             completed: {
               type: Boolean,
+              readonly: true,
               notifyPath: Boolean
             }
           };
@@ -279,8 +286,8 @@
               info.removedNodes.filter(this._isStep).length > 0) {
               this._steps = this._findSteps();
               this._prepareSteps(this._steps);
-              if (!this.selectedStep) {
-                this.selectedStep = 0;
+              if (!this.selected) {
+                this.selected = 0;
               }
             }
           });
@@ -357,7 +364,7 @@
         */
         next() {
           if (!this._steps) return;
-          this.continue(this._steps[this.selectedStep]);
+          this.continue(this._steps[this.selected]);
         }
 
         /** @protected */
@@ -365,21 +372,21 @@
           if (this.linear && step.error) return;
           step.completed = true;
           this.notifyPath('_steps');
-          this.selectedStep = this._findNextStep(this.selectedStep);
-          this.completed = this.selectedStep === this._steps.length - 1;
+          this.selected = this._findNextStep(this.selected);
+          this.completed = this.selected === this._steps.length - 1;
         }
 
         /** @protected */
         back(step) {
-          if (this.selectedStep > 0) {
-            this.selectedStep = this.selectedStep - 1;
+          if (this.selected > 0) {
+            this.selected = this.selected - 1;
           }
         }
 
         /** @protected */
         skip(step) {
-          this.selectedStep = this._findNextStep(this.selectedStep);
-          this.completed = this.selectedStep === this._steps.length - 1;
+          this.selected = this._findNextStep(this.selected);
+          this.completed = this.selected === this._steps.length - 1;
         }
 
         /** @protected */
@@ -392,7 +399,7 @@
          * Reset the stepper and all its steps to the initial state.
          */
         reset() {
-          this.selectedStep = 0;
+          this.selected = 0;
           this._steps.forEach(s => s._reset());
           this.notifyPath('_steps');
         }
@@ -428,10 +435,10 @@
           });
         }
 
-        _selectionChanged(selectedStep) {
+        _selectionChanged(selected) {
 
           this._steps.forEach((step, i) => {
-            step.selected = i == selectedStep;
+            step.selected = i == selected;
           })
 
         }
@@ -440,7 +447,7 @@
       window.customElements.define(UdStepperElement.is, UdStepperElement);
 
       /**
-       * @namespace
+       * @namespace UrDeveloper
        */
       window.UrDeveloper = window.UrDeveloper || {};
       UrDeveloper.UdStepperElement = UdStepperElement;
