@@ -18,29 +18,6 @@ Material Design:
           color: rgba(0, 0, 0, 0.8);
         }
       }
-      .demo-actions {
-        display: flex;
-        flex-direction: row;
-        padding: 10px 0px 10px 0px;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .demo-actions .buttons {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-      }
-
-      .demo-actions .buttons .reset {
-        background-color: var(--paper-pink-400);
-        color: white;
-      }
-
-      .demo-actions .buttons .toggle {
-        background-color: var(--paper-indigo-400);
-        color: white;
-      }
     </style>
     <next-code-block></next-code-block>
   </template>
@@ -83,3 +60,6 @@ $ polymer test
 Your application is already set up to be tested via
 [web-component-tester](https://github.com/Polymer/web-component-tester). Run
 `polymer test` to run your application's test suite locally.
+
+## Acknowledgment
+This project is inspired by [MDL-Stepper](https://ahlechandre.github.io/mdl-stepper/).
