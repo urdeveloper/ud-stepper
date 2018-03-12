@@ -307,6 +307,9 @@
 
         _prepareSteps(steps) {
           steps.forEach((step, i) => {
+            //don't overwrite the step's actions, if they're already set
+            if (step.actions) return;
+
             //By default all steps have continue and cancel action
             const actions = [{
               name: 'continue'

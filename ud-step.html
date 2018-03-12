@@ -215,7 +215,7 @@
         }
 
         static get observers() {
-          return ['_updateActionsButtons(_actionButtons.*,_linearActionButtons.*,actions)']
+          return ['_updateActionsButtons(_actionButtons.*,_linearActionButtons.*,actions.*)']
         }
 
         ready() {
@@ -245,7 +245,7 @@
         }
 
         _updateActionsButtons(actionButtons, linearActionButtons, allowedActions) {
-          if (!allowedActions) return;
+          if (!allowedActions.base) return;
           let actionBtns = (actionButtons.base || []).concat(linearActionButtons.base || []);
           actionBtns.forEach(ab => {
             const actionName = ab.getAttribute('data-action');
@@ -254,6 +254,9 @@
               ab.style.display = 'none';
             } else {
               ab.disabled = action.disabled;
+              if (action.title) {
+                ab.innerText = action.title;
+              }
             }
           });
         }
