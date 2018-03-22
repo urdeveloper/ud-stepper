@@ -98,7 +98,7 @@
 
       .header[error] .label-text,
       .header[error] .label-icon {
-        color: var(--paper-deep-orange-a700);
+        color: var(--ud-stepper-icon-error-color, --paper-deep-orange-a700);
       }
 
       .step-number {
@@ -220,6 +220,17 @@
       /**
        * `ud-stepper`
        * Material Design Stepper
+       *
+       * ### Styling
+       *
+       * The following custom properties and mixins are available for styling:
+       *
+       * Custom Property | Description | Default
+       * ----------------------|-------------|--------
+       * `--ud-stepper-header-container-style` | Style mixin for the header container | `{}`
+       * `--ud-stepper-icon-completed-color` | The icon color of a completed step | `--google-blue-500`
+       * `--ud-stepper-icon-error-color` | The icon color of a step with error | `--paper-deep-orange-a700`
+       * `--ud-stepper-icon-seleced-color` | The icon color of a selected step | `--google-blue-500`
        *
        * @customElement
        * @polymer
