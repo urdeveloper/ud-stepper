@@ -48,7 +48,7 @@
 
       .continue-btn,
       #actions ::slotted(.continue-btn) {
-        color: var(--ud-step-continute-btn-color, var(--google-blue-500));
+        color: var(--ud-step-continue-btn-color, var(--google-blue-500));
       }
 
       paper-button[disabled],
@@ -79,11 +79,20 @@
        * `ud-step`
        * Material Design Step
        *
+       * ### Styling
+       *
+       * The following custom properties and mixins are available for styling:
+       *
+       * Custom Property | Description | Default
+       * ----------------------|-------------|--------
+       * `--ud-step-content-style` | Style mixin of the step content | `{}`
+       * `--ud-step-continue-btn-color` | Continue button color | `--google-blue-500`
+       *
        * @customElement
        * @polymer
        * @memberof UrDeveloper
        */
-      class UdStepElement extends Polymer.Element {
+      class UdStepElement extends (class extends Polymer.Element {}) {
         static get is() {
           return 'ud-step';
         }
@@ -137,7 +146,19 @@
             },
 
             /**
-            * Available actions for the step
+            * The `actions` property can be used to override the default behavior of the step's actions.
+            * You can define what actions are available, their texts and whether are enabled or disabled.
+            * for example: 
+            * ```json
+            *  {
+            *    {
+            *      name: 'continue', title: 'Next'
+            *    },
+            *    {
+            *      name: 'cancel', title: 'Reset', disabled: true
+            *    }
+            *  }
+            * ```
             */
             actions: {
               type: Array
