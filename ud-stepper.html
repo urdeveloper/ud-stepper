@@ -354,7 +354,7 @@
 
         _handleStepAction(evt) {
           const actionHandler = this[evt.detail.toLowerCase()];
-          if (actionHandler) actionHandler(evt.target);
+          if (actionHandler) actionHandler.apply(this, [evt.target]);
         }
 
         _findNextStep(currentStep) {
@@ -458,9 +458,7 @@
         _isCompleted(steps) {
           if (!steps || steps.length === 0) return false;
           //stepper is completed when all non-optional steps are completed.
-          let result = steps.filter(s => s.completed || s.optional).length == steps.length;
-          console.log(result);
-          return result;
+          return steps.filter(s => s.completed || s.optional).length == steps.length;
         }
       }
 
