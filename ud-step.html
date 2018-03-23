@@ -250,7 +250,7 @@
             this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsSlot, (info) => {
               this._actionButtons = Array.from(info.addedNodes.filter(n=>n.nodeType === Node.ELEMENT_NODE && n.hasAttribute("data-action")));
               this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
-                ab.addEventListener('tap', (evt) => this._handleAction(evt));
+                ab.addEventListener('click', (evt) => this._handleAction(evt));
               });
             });
           }
@@ -259,7 +259,7 @@
             this._nodeObserver1 = new Polymer.FlattenedNodesObserver(this.$.linearActionsSlot, (info) => {
               this._linearActionButtons = Array.from(info.addedNodes.filter(n=>n.nodeType === Node.ELEMENT_NODE && n.hasAttribute("data-action")));
               this._linearActionButtons.filter(ab => !ab._hooked).forEach(ab => {
-                ab.addEventListener('tap', (evt) => this._handleAction(evt));
+                ab.addEventListener('click', (evt) => this._handleAction(evt));
               });
             });
           }

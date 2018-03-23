@@ -353,7 +353,8 @@
         }
 
         _handleStepAction(evt) {
-          this[evt.detail.toLowerCase()](evt.target);
+          const actionHandler = this[evt.detail.toLowerCase()];
+          if (actionHandler) actionHandler(evt.target);
         }
 
         _findNextStep(currentStep) {

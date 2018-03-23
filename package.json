@@ -1,0 +1,20 @@
+{
+  "name": "ud-stepper",
+  "version": "0.3.3",
+  "description": "Polymer 2.x Material Design Stepper",
+  "author": "urdeveloper",
+  "license": "MIT",
+  "repository": "urdeveloper/ud-stepper",
+  "bugs": {
+    "url": "https://github.com/urdeveloper/ud-stepper/issues"
+  },
+  "homepage": "https://github.com/urdeveloper/ud-stepper",
+  "keywords": [
+    "urdeveloper",
+    "ud-stepper",
+    "components",
+    "webcomponents",
+    "web-components"
+  ],
+  "dependencies": {}
+}
