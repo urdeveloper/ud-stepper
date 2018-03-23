@@ -434,6 +434,7 @@
            */
           if (this.linear) {
             const step = this._steps[evt.detail.selected];
+            if (!step) return;
             if ((step.completed && step.editable) || (!step.completed && step.optional)) {
               return;
             }
