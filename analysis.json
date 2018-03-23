@@ -8,11 +8,11 @@
       "sourceRange": {
         "file": "ud-stepper.html",
         "start": {
-          "line": 465,
+          "line": 470,
           "column": 6
         },
         "end": {
-          "line": 465,
+          "line": 470,
           "column": 52
         }
       },
@@ -887,7 +887,7 @@
             {
               "name": "completed",
               "type": "boolean",
-              "description": "Determines if the stepper is compeleted.",
+              "description": "Determines if the stepper is compeleted. The stepper is completed when all its non-optional steps are completed.",
               "privacy": "public",
               "sourceRange": {
                 "start": {
@@ -895,12 +895,15 @@
                   "column": 12
                 },
                 "end": {
-                  "line": 284,
+                  "line": 285,
                   "column": 13
                 }
               },
               "metadata": {
-                "polymer": {}
+                "polymer": {
+                  "notify": true,
+                  "readOnly": true
+                }
               }
             }
           ],
@@ -911,11 +914,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 306,
+                  "line": 307,
                   "column": 8
                 },
                 "end": {
-                  "line": 312,
+                  "line": 313,
                   "column": 9
                 }
               },
@@ -928,11 +931,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 314,
+                  "line": 315,
                   "column": 8
                 },
                 "end": {
-                  "line": 316,
+                  "line": 317,
                   "column": 9
                 }
               },
@@ -945,11 +948,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 318,
+                  "line": 319,
                   "column": 8
                 },
                 "end": {
-                  "line": 343,
+                  "line": 344,
                   "column": 9
                 }
               },
@@ -966,11 +969,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 345,
+                  "line": 346,
                   "column": 8
                 },
                 "end": {
-                  "line": 347,
+                  "line": 348,
                   "column": 9
                 }
               },
@@ -987,11 +990,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 349,
+                  "line": 350,
                   "column": 8
                 },
                 "end": {
-                  "line": 351,
+                  "line": 352,
                   "column": 9
                 }
               },
@@ -1008,11 +1011,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 353,
+                  "line": 354,
                   "column": 8
                 },
                 "end": {
-                  "line": 355,
+                  "line": 356,
                   "column": 9
                 }
               },
@@ -1029,11 +1032,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 357,
+                  "line": 358,
                   "column": 8
                 },
                 "end": {
-                  "line": 373,
+                  "line": 374,
                   "column": 9
                 }
               },
@@ -1050,11 +1053,11 @@
               "privacy": "public",
               "sourceRange": {
                 "start": {
-                  "line": 378,
+                  "line": 379,
                   "column": 8
                 },
                 "end": {
-                  "line": 381,
+                  "line": 382,
                   "column": 9
                 }
               },
@@ -1067,7 +1070,7 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 384,
+                  "line": 385,
                   "column": 8
                 },
                 "end": {
@@ -1113,7 +1116,7 @@
                   "column": 8
                 },
                 "end": {
-                  "line": 403,
+                  "line": 402,
                   "column": 9
                 }
               },
@@ -1130,11 +1133,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 406,
+                  "line": 405,
                   "column": 8
                 },
                 "end": {
-                  "line": 408,
+                  "line": 407,
                   "column": 9
                 }
               },
@@ -1151,11 +1154,11 @@
               "privacy": "public",
               "sourceRange": {
                 "start": {
-                  "line": 414,
+                  "line": 412,
                   "column": 8
                 },
                 "end": {
-                  "line": 418,
+                  "line": 416,
                   "column": 9
                 }
               },
@@ -1168,11 +1171,11 @@
               "privacy": "public",
               "sourceRange": {
                 "start": {
-                  "line": 423,
+                  "line": 421,
                   "column": 8
                 },
                 "end": {
-                  "line": 425,
+                  "line": 423,
                   "column": 9
                 }
               },
@@ -1185,11 +1188,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 427,
+                  "line": 425,
                   "column": 8
                 },
                 "end": {
-                  "line": 442,
+                  "line": 440,
                   "column": 9
                 }
               },
@@ -1206,11 +1209,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 444,
+                  "line": 442,
                   "column": 8
                 },
                 "end": {
-                  "line": 449,
+                  "line": 447,
                   "column": 9
                 }
               },
@@ -1230,11 +1233,11 @@
               "privacy": "protected",
               "sourceRange": {
                 "start": {
-                  "line": 451,
+                  "line": 449,
                   "column": 8
                 },
                 "end": {
-                  "line": 457,
+                  "line": 454,
                   "column": 9
                 }
               },
@@ -1242,6 +1245,27 @@
               "params": [
                 {
                   "name": "selected"
+                }
+              ]
+            },
+            {
+              "name": "_isCompleted",
+              "description": "",
+              "privacy": "protected",
+              "sourceRange": {
+                "start": {
+                  "line": 456,
+                  "column": 8
+                },
+                "end": {
+                  "line": 462,
+                  "column": 9
+                }
+              },
+              "metadata": {},
+              "params": [
+                {
+                  "name": "steps"
                 }
               ]
             }
@@ -1260,7 +1284,7 @@
               "column": 6
             },
             "end": {
-              "line": 458,
+              "line": 463,
               "column": 7
             }
           },
@@ -1318,14 +1342,14 @@
             },
             {
               "name": "completed",
-              "description": "Determines if the stepper is compeleted.",
+              "description": "Determines if the stepper is compeleted. The stepper is completed when all its non-optional steps are completed.",
               "sourceRange": {
                 "start": {
                   "line": 280,
                   "column": 12
                 },
                 "end": {
-                  "line": 284,
+                  "line": 285,
                   "column": 13
                 }
               },
@@ -1338,6 +1362,12 @@
               "type": "CustomEvent",
               "name": "selected-changed",
               "description": "Fired when the `selected` property changes.",
+              "metadata": {}
+            },
+            {
+              "type": "CustomEvent",
+              "name": "completed-changed",
+              "description": "Fired when the `completed` property changes.",
               "metadata": {}
             }
           ],

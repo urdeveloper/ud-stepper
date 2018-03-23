@@ -276,12 +276,13 @@
             },
 
             /**
-            * Determines if the stepper is compeleted.
+            * Determines if the stepper is compeleted. The stepper is completed when all its non-optional steps are completed.
             **/
             completed: {
               type: Boolean,
-              readonly: true,
-              notifyPath: Boolean
+              notify: true,
+              reflectToAttribute: true,
+              computed: '_isCompleted(_steps)'
             }
           };
         }
@@ -387,7 +388,6 @@
           step.completed = true;
           this.notifyPath('_steps');
           this.selected = this._findNextStep(this.selected);
-          this.completed = this.selected === this._steps.length - 1;
         }
 
         /** @protected */
@@ -400,14 +400,12 @@
         /** @protected */
         skip(step) {
           this.selected = this._findNextStep(this.selected);
-          this.completed = this.selected === this._steps.length - 1;
         }
 
         /** @protected */
         cancel(step) {
 
         }
-
 
         /**
          * Reset the stepper and all its steps to the initial state.
@@ -453,8 +451,15 @@
 
           this._steps.forEach((step, i) => {
             step.selected = i == selected;
-          })
+          });
+        }
 
+        _isCompleted(steps) {
+          if (!steps || steps.length === 0) return false;
+          //stepper is completed when all non-optional steps are completed.
+          let result = steps.filter(s => s.completed || s.optional).length == steps.length;
+          console.log(result);
+          return result;
         }
       }
 
