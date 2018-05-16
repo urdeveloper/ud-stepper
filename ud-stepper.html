@@ -42,6 +42,7 @@
 
       :host(:not([vertical])) .header:not(:last-of-type)::after {
         content: '';
+        display: inline-block;
         position: relative;
         flex: 1;
         top: 36px;
@@ -130,10 +131,6 @@
         overflow: visible;
       }
 
-      :host([vertical]) .label {
-        flex: 1;
-      }
-
       :host([vertical]) .vertical-step ::slotted(ud-step) {
         flex: 1;
       }
@@ -147,6 +144,7 @@
 
       .header:not(:last-of-type) .vertical-step::before {
         content: '';
+        display: inline-block;
         position: relative;
         width: 1px;
         left: 3px;
