@@ -170,7 +170,7 @@
     }
 
     :host([vertical][animate]) .step-container {
-      height: 10px;
+      height: 0px;
     }
 
     :host([vertical][animate]) [selected] .step-container {
@@ -513,6 +513,13 @@
          */
         toggleOrientation() {
           this.vertical = !this.vertical;
+        }
+
+        /**
+         * Toggle the animation 
+         */
+        toggleAnimation() {
+          this.animate = !this.animate;
         }
 
         _handleStepActivate(evt) {

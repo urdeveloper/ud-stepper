@@ -46,7 +46,7 @@
         color: white;
       }
 
-      .demo-actions .buttons .toggle {
+      .demo-actions .buttons .toggle, .demo-actions .buttons .toggle-animation {
         background-color: var(--paper-indigo-400);
         color: white;
       }
@@ -61,11 +61,12 @@
       <div class="buttons">
         <paper-button class="reset">Reset Stepper</paper-button>
         <paper-button class="toggle">Toggle Orientation</paper-button>
+        <paper-button class="toggle-animation">Toggle Animation</paper-button>
       </div>
     </div>
     <demo-snippet>
       <template>
-        <ud-stepper linear sizing="contain">
+        <ud-stepper linear sizing="contain" animate>
           <ud-step title="Step 1">
             <div slot="content">Step 1 Content</div>
           </ud-step>
@@ -85,12 +86,13 @@
       <div class="buttons">
         <paper-button class="reset">Reset Stepper</paper-button>
         <paper-button class="toggle">Toggle Orientation</paper-button>
+        <paper-button class="toggle-animation">Toggle Animation</paper-button>
       </div>
     </div>
     <demo-snippet>
       <template>
         <ud-stepper vertical>
-          <ud-step title="Step 1">
+          <ud-step title="Step 1 animate">
             <div slot="content">Step 1 Content</div>
           </ud-step>
           <ud-step title="Step 2">
@@ -186,6 +188,12 @@
       document.querySelectorAll('paper-button.toggle').forEach(rs => {
         rs.addEventListener('tap', (evt) => {
           evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').toggleOrientation();
+        });
+      });
+
+      document.querySelectorAll('paper-button.toggle-animation').forEach(rs => {
+        rs.addEventListener('tap', (evt) => {
+          evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').toggleAnimation();
         });
       });
     });
