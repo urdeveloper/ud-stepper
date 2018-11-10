@@ -23,7 +23,10 @@
           color: rgba(0, 0, 0, 0.8);
         }
       }
-
+    
+      ud-stepper  {
+        min-height: 350px;
+      }
       .demo-actions {
         display: flex;
         flex-direction: row;
@@ -62,7 +65,7 @@
     </div>
     <demo-snippet>
       <template>
-        <ud-stepper linear>
+        <ud-stepper linear sizing="contain">
           <ud-step title="Step 1">
             <div slot="content">Step 1 Content</div>
           </ud-step>
@@ -110,7 +113,7 @@
     </div>
     <demo-snippet>
       <template>
-        <ud-stepper linear>
+        <ud-stepper linear sizing="contain">
           <ud-step title="Step 1" editable>
             <div slot="content">Step 1 Content</div>
           </ud-step>

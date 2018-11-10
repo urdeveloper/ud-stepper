@@ -6,6 +6,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "paper-styles": "^2.0.0",
+    "neon-animation": "^2.2.0",
     "iron-selector": "^2.0.1",
     "paper-button": "^2.0.0",
     "iron-iconset-svg": "^2.1.0",

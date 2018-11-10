@@ -1,172 +1,189 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../neon-animation/web-animations.html">
+<link rel="import" href="../neon-animation/neon-animated-pages.html">
+<link rel="import" href="../neon-animation/neon-animations.html">
 <link rel="import" href="../paper-styles/element-styles/paper-material-styles.html">
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../paper-styles/typography.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../polymer/lib/mixins/mutable-data.html">
-
 <link rel="import" href="ud-step.html">
 <link rel="import" href="ud-iconset.html">
-
+<!-- <link rel="import" href="ud-stepper-animate-style.html"> -->
 <dom-module id="ud-stepper">
   <template>
     <style include="paper-material-styles">
-      :host {
-        display: flex;
-        flex-direction: column;
-      }
+    :host {
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
 
-      .header-container {
-        display: flex;
-        flex-direction: row;
+    .header-container {
+      display: flex;
+      flex-direction: row;
 
-        flex-wrap: nowrap;
-        align-items: center;
-        @apply --ud-stepper-header-container-style;
-      }
+      flex-wrap: nowrap;
+      align-items: center;
+      @apply --ud-stepper-header-container-style;
+    }
 
-      /* Horizontal Styles */
+    /* Horizontal Styles */
 
-      .header {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        overflow: hidden;
-      }
+    .header {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-      :host(:not([vertical])) .header:not(:last-of-type) {
-        flex: 1;
-      }
+    :host(:not([vertical])) .header:not(:last-of-type) {
+      flex: 1;
+    }
 
-      :host(:not([vertical])) .header:not(:last-of-type)::after {
-        content: '';
-        display: inline-block;
-        position: relative;
-        flex: 1;
-        top: 36px;
-        height: 1px;
-        margin-left: -12px;
-        width: 200px;
-        background-color: rgba(0, 0, 0, 0.1);
-      }
+    :host(:not([vertical])) .header:not(:last-of-type)::after {
+      content: '';
+      display: inline-block;
+      position: relative;
+      flex: 1;
+      top: 36px;
+      height: 1px;
+      margin-left: -12px;
+      width: 200px;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
 
-      .header .label {
-        display: flex;
-        flex-direction: row;
-        cursor: pointer;
-        align-items: center;
-        padding: 24px 24px 24px 24px;
-      }
+    .header .label {
+      display: flex;
+      flex-direction: row;
+      cursor: pointer;
+      align-items: center;
+      padding: 24px 24px 24px 24px;
+    }
 
-      .header .label:hover {
-        background-color: #f0f0f0;
-      }
+    .header .label:hover {
+      background-color: #f0f0f0;
+    }
 
-      .label-icon {
-        color: rgba(0, 0, 0, 0.38);
-        @apply --paper-font-caption;
-        text-align: center;
-        line-height: 24px;
-      }
+    .label-icon {
+      color: rgba(0, 0, 0, 0.38);
+      @apply --paper-font-caption;
+      text-align: center;
+      line-height: 24px;
+    }
 
-      .label-text {
-        @apply --paper-font-body2;
-        padding-left: 8px;
-        color: rgba(0, 0, 0, 0.54);
-      }
+    .label-text {
+      @apply --paper-font-body2;
+      padding-left: 8px;
+      color: rgba(0, 0, 0, 0.54);
+    }
 
-      .label-text .optional,
-      .label-text .summary {
-        @apply --paper-font-caption;
-      }
+    .label-text .optional,
+    .label-text .summary {
+      @apply --paper-font-caption;
+    }
 
-      :host(:not([vertical])) .label-text .main {
-        @apply --paper-font-common-nowrap;
-        max-width: 120px;
-      }
+    :host(:not([vertical])) .label-text .main {
+      @apply --paper-font-common-nowrap;
+      max-width: 120px;
+    }
 
-      .header.selected .label-icon,
-      .header[completed] .label-icon {
-        color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
-      }
+    .header.selected .label-icon,
+    .header[completed] .label-icon {
+      color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
+    }
 
-      .header.selected .label-text,
-      .header[completed] .label-text {
-        color: rgba(0, 0, 0, 0.87);
-      }
+    .header.selected .label-text,
+    .header[completed] .label-text {
+      color: rgba(0, 0, 0, 0.87);
+    }
 
-      .header[error] .label-text,
-      .header[error] .label-icon {
-        color: var(--ud-stepper-icon-error-color, --paper-deep-orange-a700);
-      }
+    .header[error] .label-text,
+    .header[error] .label-icon {
+      color: var(--ud-stepper-icon-error-color, --paper-deep-orange-a700);
+    }
 
-      .step-number {
-        color: white;
-        background-color: rgba(0, 0, 0, 0.38);
-        border-radius: 50%;
-        line-height: 24px;
-        width: 24px;
-        height: 24px;
-        max-height: 24px;
-        max-width: 24px;
-      }
+    .step-number {
+      color: white;
+      background-color: rgba(0, 0, 0, 0.38);
+      border-radius: 50%;
+      line-height: 24px;
+      width: 24px;
+      height: 24px;
+      max-height: 24px;
+      max-width: 24px;
+    }
 
-      .header.selected .step-number {
-        background-color: var(--ud-stepper-icon-seleced-color, var(--google-blue-500));
-      }
+    .header.selected .step-number {
+      background-color: var(--ud-stepper-icon-seleced-color, var(--google-blue-500));
+    }
 
-      /* Vertical Styles */
+    /* Vertical Styles */
 
-      :host([vertical]) .header-container {
-        flex-direction: column;
-        flex-wrap: nowrap;
-        align-items: stretch;
-      }
+    :host([vertical]) .header-container {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: stretch;
+    }
 
-      :host([vertical]) .header {
-        flex-direction: column;
-        justify-content: flex-start;
-        overflow: visible;
-      }
+    :host([vertical]) .header {
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: visible;
+    }
 
-      :host([vertical]) .vertical-step ::slotted(ud-step) {
-        flex: 1;
-      }
+    :host([vertical]) .vertical-step ::slotted(ud-step) {
+      flex: 1;
+    }
 
-      .vertical-step {
-        padding-left: 32px;
-        display: flex;
-        flex-flow: row;
-        align-items: stretch;
-      }
+    .vertical-step {
+      padding-left: 32px;
+      display: flex;
+      flex-flow: row;
+      align-items: stretch;
+    }
 
-      .header:not(:last-of-type) .vertical-step::before {
-        content: '';
-        display: inline-block;
-        position: relative;
-        width: 1px;
-        left: 3px;
-        margin-top: -10px;
-        margin-bottom: -16px;
-        background-color: rgba(0, 0, 0, 0.1);
-      }
+    .header:not(:last-of-type) .vertical-step::before {
+      content: '';
+      display: inline-block;
+      position: relative;
+      width: 1px;
+      left: 3px;
+      margin-top: -10px;
+      margin-bottom: -16px;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
 
-      :host([vertical]) .header .label {
-        padding: 24px 24px 16px 24px;
-      }
+    :host([vertical]) .header .label {
+      padding: 24px 24px 16px 24px;
+    }
 
-      ::slotted(ud-step:not([selected])) {
-        display: none;
-      }
+    .vertical-step ::slotted(ud-step) {
+      transform: scaleY(0);
+      transition: transform 0.26s ease;
+    }
 
-      .vertical-step ::slotted(ud-step:not([selected])) {
-        display: none;
-      }
+    .vertical-step ::slotted(ud-step[selected]) {
+      transform: scaleY(1);
+    }
+
+    :host([vertical]) .step-container {
+      height: 10px;
+    }
+
+    :host([vertical]) [selected] .step-container {
+      display: flex;
+      height: fit-content;
+    }
+
+
+    vertical-step ::slotted(ud-step:not([selected])) {
+      display: none;
+    }
     </style>
-    <iron-selector id="selector" class="header-container" selectable=".header.selectable" selected-class="selected" selected="{{selected}}"
-      on-iron-activate="_handleStepActivate" selected-attribute="selected">
+    <iron-selector id="selector" class="header-container" selectable=".header.selectable" selected-class="selected" selected="{{selected}}" on-iron-activate="_handleStepActivate" selected-attribute="selected">
       <dom-repeat items="[[_steps]]" mutable-data>
         <template>
           <div class="header selectable" completed$="[[item.completed]]" error$="[[item.error]]">
@@ -201,122 +218,150 @@
               </template>
             </dom-if>
           </div>
-          </div>
         </template>
       </dom-repeat>
     </iron-selector>
     <dom-if if="[[!vertical]]" restamp>
       <template>
-        <slot name="horizontal"></slot>
-        </div>
+        <neon-animated-pages selected="[[selected]]" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
+          <slot name="horizontal"></slot>
+        </neon-animated-pages>
       </template>
     </dom-if>
   </template>
-
   <script>
-    {
-      /**
-       * `ud-stepper`
-       * Material Design Stepper
-       *
-       * ### Styling
-       *
-       * The following custom properties and mixins are available for styling:
-       *
-       * Custom Property | Description | Default
-       * ----------------------|-------------|--------
-       * `--ud-stepper-header-container-style` | Style mixin for the header container | `{}`
-       * `--ud-stepper-icon-completed-color` | The icon color of a completed step | `--google-blue-500`
-       * `--ud-stepper-icon-error-color` | The icon color of a step with error | `--paper-deep-orange-a700`
-       * `--ud-stepper-icon-seleced-color` | The icon color of a selected step | `--google-blue-500`
-       *
-       * @customElement
-       * @polymer
-       * @memberof UrDeveloper
-       * @demo demo/index.html
-       */
-      class UdStepperElement extends Polymer.MutableData(Polymer.Element) {
-        static get is() {
-          return 'ud-stepper';
-        }
+  {
+    /**
+     * `ud-stepper`
+     * Material Design Stepper
+     *
+     * ### Styling
+     *
+     * The following custom properties and mixins are available for styling:
+     *
+     * Custom Property | Description | Default
+     * ----------------------|-------------|--------
+     * `--ud-stepper-header-container-style` | Style mixin for the header container | `{}`
+     * `--ud-stepper-icon-completed-color` | The icon color of a completed step | `--google-blue-500`
+     * `--ud-stepper-icon-error-color` | The icon color of a step with error | `--paper-deep-orange-a700`
+     * `--ud-stepper-icon-seleced-color` | The icon color of a selected step | `--google-blue-500`
+     *
+     * @customElement
+     * @polymer
+     * @memberof UrDeveloper
+     * @demo demo/index.html
+     */
+    class UdStepperElement extends Polymer.MutableData(Polymer.Element) {
+      static get is() {
+        return 'ud-stepper';
+      }
 
-        static get properties() {
-          return {
+      static get properties() {
+        return {
 
-            /**
-             * If true, the stepper becomes vertical.
-             */
-            vertical: {
-              type: Boolean,
-              value: false,
-              reflectToAttribute: Boolean
-            },
+          /**
+           * If true, the stepper becomes vertical.
+           */
+          vertical: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: Boolean
+          },
 
-            /**
-             * If true, the stepper becomes linear.
-             */
-            linear: {
-              type: Boolean,
-              reflectToAttribute: Boolean
-            },
+          /**
+           * If true, the stepper becomes linear.
+           */
+          linear: {
+            type: Boolean,
+            reflectToAttribute: Boolean
+          },
 
-            _steps: {
-              type: Array
-            },
+          _steps: {
+            type: Array
+          },
 
-            /**
-            * Gets or sets the currently selected step index (zero based).
-            **/
-            selected: {
-              type: String,
-              notify: true,
-              observer: '_selectionChanged'
-            },
+          /**
+           * Gets or sets the currently selected step index (zero based).
+           **/
+          selected: {
+            type: String,
+            notify: true,
+            observer: '_selectionChanged'
+          },
 
-            /**
-            * Determines if the stepper is compeleted. The stepper is completed when all its non-optional steps are completed.
-            **/
-            completed: {
-              type: Boolean,
-              notify: true,
-              reflectToAttribute: true,
-              computed: '_isCompleted(_steps)'
+          /**
+           * Determines if the stepper is compeleted. The stepper is completed when all its non-optional steps are completed.
+           **/
+          completed: {
+            type: Boolean,
+            notify: true,
+            reflectToAttribute: true,
+            computed: '_isCompleted(_steps)'
+          },
+
+          /* 
+           * `sizing` string | null | undefined = null
+           * Sets a sizing option for the stepper. 
+           * Valid values is `contain` (will set the height of the stepper so as to contain the larger ud-step).
+           */
+          sizing: {
+            type: String
+          },
+
+          /* 
+           * `_maxHeight` the height of larger step.
+           */
+           _maxHeight : {
+             type:  Number,
+             },
+        };
+      }
+
+      static get observers() {
+        return [
+          '_setSlotNames(_steps,vertical)',
+          '_setHeight(sizing, _maxHeight, vertical)'
+          ]
+      }
+
+      constructor() {
+        super();
+        this._templateObserver = new Polymer.FlattenedNodesObserver(this, info => {
+          if (info.addedNodes.filter(this._isStep).length > 0 ||
+            info.removedNodes.filter(this._isStep).length > 0) {
+            this._steps = this._findSteps();
+            this._prepareSteps(this._steps);
+            Polymer.RenderStatus.afterNextRender(this, () => {
+              this._setHeight(this.sizing, this._maxHeight, this.vertical);
+            });
+            
+            if (!this.selected) {
+              this.selected = 0;
             }
-          };
-        }
+          }
+        });
+      }
 
-        static get observers() {
-          return ['_setSlotNames(_steps,vertical)']
-        }
+      ready() {
+        super.ready();
+        this.addEventListener('step-action', evt => this._handleStepAction(evt));
+        this.addEventListener('step-error', evt => {
+          this.notifyPath('_steps')
+        });
+      }
 
-        constructor() {
-          super();
-          this._templateObserver = new Polymer.FlattenedNodesObserver(this, info => {
-            if (info.addedNodes.filter(this._isStep).length > 0 ||
-              info.removedNodes.filter(this._isStep).length > 0) {
-              this._steps = this._findSteps();
-              this._prepareSteps(this._steps);
-              if (!this.selected) {
-                this.selected = 0;
-              }
-            }
-          });
-        }
+      // connectedCallback() {
+      //   super.connectedCallback();
+      //   // Note(cg): we need to reset sizing here as $.selector was not properly sized on intial call.
+      // }
 
-        ready() {
-          super.ready();
-          this.addEventListener('step-action', evt => this._handleStepAction(evt));
-          this.addEventListener('step-error', evt => {
-            this.notifyPath('_steps')
-          });
-        }
+      _findSteps() {
+        return Array.from(this.querySelectorAll('ud-step'));
+      }
 
-        _findSteps() {
-          return Array.from(this.querySelectorAll('ud-step'));
-        }
-
-        _prepareSteps(steps) {
-          steps.forEach((step, i) => {
+      _prepareSteps(steps) {
+        let maxHeight = 0;
+        steps.forEach((step, i) => {
             //don't overwrite the step's actions, if they're already set
             if (step.actions) return;
 
@@ -331,7 +376,7 @@
               actions.push({
                 name: 'back',
                 disabled: i === 0
-              })
+              });
             } else if (step.optional) {
               //In linear stepper, optional step has a skip action
               actions.push({
@@ -339,7 +384,28 @@
               });
             }
             step.actions = actions;
-          });
+
+            const stepHeight = parseInt(getComputedStyle(step).height);
+              if (stepHeight > maxHeight) {
+                maxHeight = stepHeight;
+              }
+            });
+          this._maxHeight = maxHeight;
+        }
+
+        /* 
+         * `_setHeight` set height of stepper if sizing === 'contain'. 
+         * This is now necessary as `ud-steps` are absoluted positionned within neon-animated-page. Hence, stepper cannot be aware of its own size.
+         */
+        _setHeight(sizing, maxHeight, vertical) {
+          if(vertical === true) {
+            this.style.height = null;
+            return;
+          }
+
+          if (sizing === 'contain' && maxHeight ) {
+            this.style.height = this.$.selector.getBoundingClientRect().height + maxHeight + 3 + 'px';
+          }
         }
 
         _isStep(node) {
@@ -374,15 +440,15 @@
         }
 
         /**
-        * Go to the next available step
-        */
+         * Go to the next available step
+         */
         next() {
           if (!this._steps) return;
           this.continue(this._steps[this.selected]);
         }
 
         /** @protected */
-        continue(step) {
+        continue (step) {
           if (this.linear && step.error) return;
           step.completed = true;
           this.notifyPath('_steps');
