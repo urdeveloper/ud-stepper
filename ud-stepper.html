@@ -160,23 +160,31 @@
       padding: 24px 24px 16px 24px;
     }
 
-    .vertical-step ::slotted(ud-step) {
+    :host([animate]) .vertical-step ::slotted(ud-step) {
       transform: scaleY(0);
       transition: transform 0.26s ease;
     }
 
-    .vertical-step ::slotted(ud-step[selected]) {
+    :host([animate]) .vertical-step ::slotted(ud-step[selected]) {
       transform: scaleY(1);
     }
 
-    :host([vertical]) .step-container {
+    :host([vertical][animate]) .step-container {
       height: 10px;
     }
 
-    :host([vertical]) [selected] .step-container {
+    :host([vertical][animate]) [selected] .step-container {
       display: flex;
       height: fit-content;
     }
+
+     :host(:not([animate])) ::slotted(ud-step:not([selected])) {
+        display: none;
+      }
+
+    :host(:not([animate])) .vertical-step ::slotted(ud-step:not([selected])) {
+        display: none;
+      }
 
 
     vertical-step ::slotted(ud-step:not([selected])) {
@@ -223,9 +231,18 @@
     </iron-selector>
     <dom-if if="[[!vertical]]" restamp>
       <template>
-        <neon-animated-pages selected="[[selected]]" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
-          <slot name="horizontal"></slot>
-        </neon-animated-pages>
+         <dom-if if="[[animate]]" restamp>
+          <template>
+            <neon-animated-pages selected="[[selected]]" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
+              <slot name="horizontal"></slot>
+            </neon-animated-pages>
+          </template>
+        </dom-if>
+        <dom-if if="[[!animate]]" restamp>
+          <template>
+            <slot name="horizontal"></slot>
+          </template>
+        </dom-if>
       </template>
     </dom-if>
   </template>
@@ -263,6 +280,15 @@
            * If true, the stepper becomes vertical.
            */
           vertical: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: Boolean
+          },
+
+          /**
+           * If true, the stepper performs animations.
+           */
+          animate: {
             type: Boolean,
             value: false,
             reflectToAttribute: Boolean
@@ -320,7 +346,7 @@
       static get observers() {
         return [
           '_setSlotNames(_steps,vertical)',
-          '_setHeight(sizing, _maxHeight, vertical)'
+          '_setHeight(sizing, _maxHeight, vertical, animate)'
           ]
       }
 
@@ -332,7 +358,7 @@
             this._steps = this._findSteps();
             this._prepareSteps(this._steps);
             Polymer.RenderStatus.afterNextRender(this, () => {
-              this._setHeight(this.sizing, this._maxHeight, this.vertical);
+              this._setHeight(this.sizing, this._maxHeight, this.vertical, this.animate);
             });
             
             if (!this.selected) {
@@ -397,8 +423,9 @@
          * `_setHeight` set height of stepper if sizing === 'contain'. 
          * This is now necessary as `ud-steps` are absoluted positionned within neon-animated-page. Hence, stepper cannot be aware of its own size.
          */
-        _setHeight(sizing, maxHeight, vertical) {
-          if(vertical === true) {
+        _setHeight(sizing, maxHeight, vertical, animate) {
+          // Note(cg): this is only useful for horizontal and animated layout (relying on neon-animated-page).
+          if(vertical === true || animate !== true) {
             this.style.height = null;
             return;
           }
