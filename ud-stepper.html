@@ -16,6 +16,11 @@
       :host {
         display: flex;
         flex-direction: column;
+        --ud-stepper-icon-size: 30px;
+        --iron-icon-width: var(--ud-stepper-icon-size);
+        /*--iron-icon-width: 30px;*/
+        --iron-icon-height: var(--ud-stepper-icon-size);
+        /*--iron-icon-height: 30px;*/
       }
 
       .header-container {
@@ -34,11 +39,14 @@
         flex-direction: row;
         justify-content: center;
         overflow: hidden;
-      }
-
-      :host(:not([vertical])) .header:not(:last-of-type) {
         flex: 1;
       }
+
+      :host(:not([vertical])) .header[selected] {
+        background: var(--ud-stepper-selected-header-background, var(--google-grey-300));
+        @apply --ud-stepper-selected-header;
+      }
+
 
       :host(:not([vertical])) .header:not(:last-of-type)::after {
         content: '';
@@ -47,8 +55,16 @@
         flex: 1;
         top: 36px;
         height: 1px;
-        margin-left: -12px;
-        width: 200px;
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+
+      :host(:not([vertical])) .header:not(:first-of-type)::before {
+        content: '';
+        display: inline-block;
+        position: relative;
+        flex: 1;
+        top: 36px;
+        height: 1px;
         background-color: rgba(0, 0, 0, 0.1);
       }
 
@@ -60,8 +76,8 @@
         padding: 24px 24px 24px 24px;
       }
 
-      .header .label:hover {
-        background-color: #f0f0f0;
+      .header:hover{
+        background-color: var(--google-grey-100);
       }
 
       .label-icon {
@@ -106,11 +122,11 @@
         color: white;
         background-color: rgba(0, 0, 0, 0.38);
         border-radius: 50%;
-        line-height: 24px;
-        width: 24px;
-        height: 24px;
-        max-height: 24px;
-        max-width: 24px;
+        line-height: var(--ud-stepper-icon-size);
+        width: var(--ud-stepper-icon-size);
+        height: var(--ud-stepper-icon-size);
+        max-height: var(--ud-stepper-icon-size);
+        max-width: var(--ud-stepper-icon-size);
       }
 
       .header.selected .step-number {
@@ -124,6 +140,12 @@
         flex-wrap: nowrap;
         align-items: stretch;
       }
+
+     :host([vertical]) [selected] .label  {
+        background: var(--ud-stepper-header-background, #dedede);
+        @apply --ud-stepper-header-selected;
+      }
+
 
       :host([vertical]) .header {
         flex-direction: column;
@@ -229,6 +251,8 @@
        * `--ud-stepper-icon-completed-color` | The icon color of a completed step | `--google-blue-500`
        * `--ud-stepper-icon-error-color` | The icon color of a step with error | `--paper-deep-orange-a700`
        * `--ud-stepper-icon-seleced-color` | The icon color of a selected step | `--google-blue-500`
+       * `--ud-stepper-selected-header-background` | The color of a selected header label  | `--google-grey-300`
+       * `--ud-stepper-selected-header` | Style mixin for selected header | `{}`
        *
        * @customElement
        * @polymer
