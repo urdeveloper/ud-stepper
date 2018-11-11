@@ -240,9 +240,6 @@
 
       ready() {
         super.ready();
-        Polymer.RenderStatus.afterNextRender(this, () => {
-          this.addEventListener('step-action', this._onContentStepAction);
-        });
       }
 
       connectedCallback() {
@@ -264,13 +261,6 @@
               ab.addEventListener('click', (evt) => this._handleAction(evt));
             });
           });
-        }
-      }
-
-      _onContentStepAction(e) {
-        if (e.target !== this) {
-          e.stopPropagation();
-          this._handleAction(e, e.detail);
         }
       }
 

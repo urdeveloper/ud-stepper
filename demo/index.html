@@ -214,7 +214,7 @@
           window.addEventListener('WebComponentsReady', function() {
             app = document.querySelector('#app')
             app.next = e =>{
-               e.target.dispatchEvent(new CustomEvent('step-action', {detail: 'continue', bubbles: true, composed: true})); 
+               e.target.dispatchEvent(new CustomEvent('step-action', {detail: 'next', bubbles: true, composed: true})); 
             }; 
             app.back = e =>{
                e.target.dispatchEvent(new CustomEvent('step-action', {detail: 'back', bubbles: true, composed: true})); 
