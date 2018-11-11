@@ -4,52 +4,52 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
-
   <title>ud-stepper demo</title>
-
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-
   <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
   <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+  <link rel="import" href="../../paper-button/paper-button.html">
   <link rel="import" href="../ud-stepper.html">
-
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
-      ud-step {
-        height: 250px;
-        --ud-step-content-style: {
-          background-color: rgba(0, 0, 0, .1);
-          padding: 5px;
-          color: rgba(0, 0, 0, 0.8);
-        }
-      }
-    
-      ud-stepper  {
-        min-height: 350px;
-      }
-      .demo-actions {
-        display: flex;
-        flex-direction: row;
-        padding: 10px 0px 10px 0px;
-        align-items: center;
-        justify-content: space-between;
-      }
+    ud-step {
+      height: 250px;
 
-      .demo-actions .buttons {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
+      --ud-step-content-style: {
+        background-color: rgba(0, 0, 0, .1);
+        padding: 5px;
+        color: rgba(0, 0, 0, 0.8);
       }
+    }
 
-      .demo-actions .buttons .reset {
-        background-color: var(--paper-pink-400);
-        color: white;
-      }
+    ud-stepper {
+      min-height: 350px;
+    }
 
-      .demo-actions .buttons .toggle, .demo-actions .buttons .toggle-animation {
-        background-color: var(--paper-indigo-400);
-        color: white;
-      }
+    .demo-actions {
+      display: flex;
+      flex-direction: row;
+      padding: 10px 0px 10px 0px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .demo-actions .buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+
+    .demo-actions .buttons .toggle,
+    .demo-actions .buttons .toggle-animation {
+      background-color: var(--paper-indigo-400);
+      color: white;
+    }
+
+    .demo-actions .buttons .reset {
+      background-color: var(--paper-pink-400);
+      color: white;
+    }
     </style>
   </custom-style>
 </head>
@@ -177,18 +177,72 @@
       </template>
     </demo-snippet>
   </div>
-  <script>
-    window.addEventListener('WebComponentsReady', function () {
-      document.querySelectorAll('paper-button.reset').forEach(rs => {
-        rs.addEventListener('tap', (evt) => {
-          evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').reset();
-        });
-      });
+  <div class="vertical-section-container centered">
+    <div class="demo-actions">
+      <h3>Custom action implementation </h3>
+      <div class="buttons">
+        <paper-button class="reset">Reset Stepper</paper-button>
+        <paper-button class="toggle">Toggle Orientation</paper-button>
+      </div>
+    </div>
+    <demo-snippet>
+      <template>
+        <dom-bind id="app">
+          <template>
+            <style>
+            paper-button {
+              background: white;
+            }
 
-      document.querySelectorAll('paper-button.toggle').forEach(rs => {
-        rs.addEventListener('tap', (evt) => {
-          evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').toggleOrientation();
-        });
+            ;
+            </style>
+            <ud-stepper linear>
+              <ud-step title="Step 1" hide-actions editable>
+                <div slot="content">
+                  <div>Step 1 Content, custom action</div>
+                  <paper-button raised on-tap="next">next</paper-button>
+                </div>
+              </ud-step>
+              <ud-step title="Step 2">
+                <div slot="content">
+                  <div>Step 2 Content, custom action</div>
+                  <div>
+                    <paper-button raised on-tap="back">back</paper-button>
+                    <paper-button raised on-tap="next">next</paper-button>
+                  </div>
+                </div>
+              </ud-step>
+              <ud-step title="Step 3">
+                <div slot="content">Step 3 Content</div>
+              </ud-step>
+            </ud-stepper>
+          </template>
+          <script>
+          window.addEventListener('WebComponentsReady', function() {
+            app = document.querySelector('#app');
+            app.next = e => {
+              e.target.dispatchEvent(new CustomEvent('step-action', { detail: 'next', bubbles: true, composed: true }));
+            };
+            app.back = e => {
+              e.target.dispatchEvent(new CustomEvent('step-action', { detail: 'back', bubbles: true, composed: true }));
+            };
+          });
+          </script>
+        </dom-bind>
+      </template>
+    </demo-snippet>
+  </div>
+  <script>
+  window.addEventListener('WebComponentsReady', function() {
+    document.querySelectorAll('paper-button.reset').forEach(rs => {
+      rs.addEventListener('tap', (evt) => {
+        evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').reset();
+      });
+    });
+
+    document.querySelectorAll('paper-button.toggle').forEach(rs => {
+      rs.addEventListener('tap', (evt) => {
+        evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').toggleOrientation();
       });
 
       document.querySelectorAll('paper-button.toggle-animation').forEach(rs => {
@@ -197,6 +251,7 @@
         });
       });
     });
+  });
   </script>
 </body>
 

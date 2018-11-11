@@ -2,60 +2,59 @@
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-styles/element-styles/paper-material-styles.html">
 <link rel="import" href="../paper-styles/typography.html">
-
 <dom-module id="ud-step">
   <template>
     <style include="paper-material-styles">
-      :host {
-        display: flex;
-        flex-direction: column;
-      }
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
 
-      #content {
-        flex: 1;
-        @apply --ud-step-content-style;
-        margin: 24px 24px 16px 24px;
-      }
+    #content {
+      flex: 1;
+      @apply --ud-step-content-style;
+      margin: 24px 24px 16px 24px;
+    }
 
-      #actions {
-        padding: 0px 24px 8px 24px;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        align-items: center;
-        height: 48px;
-      }
+    #actions {
+      padding: 0px 24px 8px 24px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      align-items: center;
+      height: 48px;
+    }
 
-      :host[hide-actions] #actions {
-        display: none;
-      }
+    :host([hide-actions]) #actions {
+      display: none;
+    }
 
-      #actions ::slotted(.linear-actions),
-      .linear-actions {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
-        flex: 1;
-      }
+    #actions ::slotted(.linear-actions),
+    .linear-actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      flex: 1;
+    }
 
-      paper-button,
-      #actions ::slotted(paper-button) {
-        @apply --paper-font-button;
-        color: rgba(0, 0, 0, 0.83);
-      }
+    paper-button,
+    #actions ::slotted(paper-button) {
+      @apply --paper-font-button;
+      color: rgba(0, 0, 0, 0.83);
+    }
 
-      .continue-btn,
-      #actions ::slotted(.continue-btn) {
-        color: var(--ud-step-continue-btn-color, var(--google-blue-500));
-      }
+    .continue-btn,
+    #actions ::slotted(.continue-btn) {
+      color: var(--ud-step-continue-btn-color, var(--google-blue-500));
+    }
 
-      paper-button[disabled],
-      #actions ::slotted(paper-button[disabled]) {
-        color: rgba(0, 0, 0, 0.50);
-        background-color: transparent;
-      }
+    paper-button[disabled],
+    #actions ::slotted(paper-button[disabled]) {
+      color: rgba(0, 0, 0, 0.50);
+      background-color: transparent;
+    }
     </style>
     <div id="content">
       <slot name="content"></slot>
@@ -74,251 +73,251 @@
     </div>
   </template>
   <script>
-    {
-      /**
-       * `ud-step`
-       * Material Design Step
-       *
-       * ### Styling
-       *
-       * The following custom properties and mixins are available for styling:
-       *
-       * Custom Property | Description | Default
-       * ----------------------|-------------|--------
-       * `--ud-step-content-style` | Style mixin of the step content | `{}`
-       * `--ud-step-continue-btn-color` | Continue button color | `--google-blue-500`
-       *
-       * @customElement
-       * @polymer
-       * @memberof UrDeveloper
-       */
-      class UdStepElement extends (class extends Polymer.Element {}) {
-        static get is() {
-          return 'ud-step';
-        }
+  {
+    /**
+     * `ud-step`
+     * Material Design Step
+     *
+     * ### Styling
+     *
+     * The following custom properties and mixins are available for styling:
+     *
+     * Custom Property | Description | Default
+     * ----------------------|-------------|--------
+     * `--ud-step-content-style` | Style mixin of the step content | `{}`
+     * `--ud-step-continue-btn-color` | Continue button color | `--google-blue-500`
+     *
+     * @customElement
+     * @polymer
+     * @memberof UrDeveloper
+     */
+    class UdStepElement extends(class extends Polymer.Element {}) {
+      static get is() {
+        return 'ud-step';
+      }
 
-        static get properties() {
-          return {
-            /**
-             * Step title
-             */
-            title: {
-              type: String,
-              reflectToAttribute: true
-            },
-            /**
-             * Step summary that apears under the title
-             */
-            summary: {
-              type: String,
-              reflectToAttribute: true
-            },
-            /**
-             * Makes the step editable which in linear stepper user can go back to it.
-             */
-            editable: {
-              type: Boolean
-            },
-            /**
-             * Makes the step optional which allows user to skip it.
-             */
-            optional: {
-              type: Boolean
-            },
+      static get properties() {
+        return {
+          /**
+           * Step title
+           */
+          title: {
+            type: String,
+            reflectToAttribute: true
+          },
+          /**
+           * Step summary that apears under the title
+           */
+          summary: {
+            type: String,
+            reflectToAttribute: true
+          },
+          /**
+           * Makes the step editable which in linear stepper user can go back to it.
+           */
+          editable: {
+            type: Boolean
+          },
+          /**
+           * Makes the step optional which allows user to skip it.
+           */
+          optional: {
+            type: Boolean
+          },
 
-            /**
-             * Determines if this is the current step in stepper.
-             */
-            selected: {
-              type: Boolean,
-              readonly: true,
-              reflectToAttribute: true,
-              notify: true
-            },
+          /**
+           * Determines if this is the current step in stepper.
+           */
+          selected: {
+            type: Boolean,
+            readonly: true,
+            reflectToAttribute: true,
+            notify: true
+          },
 
-            /**
-             * Determines if the step is completed.
-             */
-            completed: {
-              type: Boolean,
-              readonly: true,
-              notify: true
-            },
+          /**
+           * Determines if the step is completed.
+           */
+          completed: {
+            type: Boolean,
+            readonly: true,
+            notify: true
+          },
 
-            /**
-            * The `actions` property can be used to override the default behavior of the step's actions.
-            * You can define what actions are available, their texts and whether are enabled or disabled.
-            * for example: 
-            * ```json
-            *  {
-            *    {
-            *      name: 'continue', title: 'Next'
-            *    },
-            *    {
-            *      name: 'cancel', title: 'Reset', disabled: true
-            *    }
-            *  }
-            * ```
-            */
-            actions: {
-              type: Array
-            },
+          /**
+           * The `actions` property can be used to override the default behavior of the step's actions.
+           * You can define what actions are available, their texts and whether are enabled or disabled.
+           * for example: 
+           * ```json
+           *  {
+           *    {
+           *      name: 'continue', title: 'Next'
+           *    },
+           *    {
+           *      name: 'cancel', title: 'Reset', disabled: true
+           *    }
+           *  }
+           * ```
+           */
+          actions: {
+            type: Array
+          },
 
-            /**
-             * Step icon when it's not completed yet. 
-             * If not specified, a step number will be shown instead.
-             */
-            icon: {
-              type: String
-            },
+          /**
+           * Step icon when it's not completed yet. 
+           * If not specified, a step number will be shown instead.
+           */
+          icon: {
+            type: String
+          },
 
-            /**
-             * Step icon when it's completed.
-             */
-            completedIcon: {
-              type: String,
-              value: 'ud:check-circle'
-            },
+          /**
+           * Step icon when it's completed.
+           */
+          completedIcon: {
+            type: String,
+            value: 'ud:check-circle'
+          },
 
-            /**
-             * Step icon when it's editable.
-             */
-            editableIcon: {
-              type: String,
-              value: 'ud:edit-circle'
-            },
+          /**
+           * Step icon when it's editable.
+           */
+          editableIcon: {
+            type: String,
+            value: 'ud:edit-circle'
+          },
 
-            /**
-             * The icon that will be shown when the step is in invalid state.
-             */
-            errorIcon: {
-              type: String,
-              value: 'ud:warning'
-            },
+          /**
+           * The icon that will be shown when the step is in invalid state.
+           */
+          errorIcon: {
+            type: String,
+            value: 'ud:warning'
+          },
 
-            /**
-            * Text for an optional step.
-            */
-            optionalText: {
-              type: String,
-              value: 'Optional'
-            },
+          /**
+           * Text for an optional step.
+           */
+          optionalText: {
+            type: String,
+            value: 'Optional'
+          },
 
-            /**
-            * Indicates if the step is in error state. 
-            * In a linear stepper, user cannot continue with an error state.
-            */
-            error: {
-              type: Boolean,
-              observer: '_errorChanged',
-              reflectToAttribute: true
-            },
+          /**
+           * Indicates if the step is in error state. 
+           * In a linear stepper, user cannot continue with an error state.
+           */
+          error: {
+            type: Boolean,
+            observer: '_errorChanged',
+            reflectToAttribute: true
+          },
 
-            /**
-            * Hide the actions bar
-            */
-            hideActions: {
-              type: Boolean,
-              reflectToAttribute: true,
-              value: false
-            },
+          /**
+           * Hide the actions bar
+           */
+          hideActions: {
+            type: Boolean,
+            reflectToAttribute: true,
+            value: false
+          },
 
-            _currentIcon: {
-              type: String,
-              computed: '_computeCurrentIcon(completed, editable, error)',
-              notify: true
-            },
+          _currentIcon: {
+            type: String,
+            computed: '_computeCurrentIcon(completed, editable, error)',
+            notify: true
+          },
 
-            _actionButtons: {
-              type: Array
-            }
+          _actionButtons: {
+            type: Array
           }
-        }
+        };
+      }
 
-        static get observers() {
-          return ['_updateActionsButtons(_actionButtons.*,_linearActionButtons.*,actions.*)']
-        }
+      static get observers() {
+        return ['_updateActionsButtons(_actionButtons.*,_linearActionButtons.*,actions.*)'];
+      }
 
-        ready() {
-          super.ready();
-        }
+      ready() {
+        super.ready();
+      }
 
-        connectedCallback() {
-          super.connectedCallback();
-          if (this.hideActions) return;
-          if (this.$.actionsSlot) {
-            this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsSlot, (info) => {
-              this._actionButtons = Array.from(info.addedNodes.filter(n=>n.nodeType === Node.ELEMENT_NODE && n.hasAttribute("data-action")));
-              this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
-                ab.addEventListener('click', (evt) => this._handleAction(evt));
-              });
+      connectedCallback() {
+        super.connectedCallback();
+        if (this.hideActions) return;
+        if (this.$.actionsSlot) {
+          this._nodeObserver = new Polymer.FlattenedNodesObserver(this.$.actionsSlot, (info) => {
+            this._actionButtons = Array.from(info.addedNodes.filter(n => n.nodeType === Node.ELEMENT_NODE && n.hasAttribute('data-action')));
+            this._actionButtons.filter(ab => !ab._hooked).forEach(ab => {
+              ab.addEventListener('click', (evt) => this._handleAction(evt));
             });
-          }
-
-          if (this.$.linearActionsSlot) {
-            this._nodeObserver1 = new Polymer.FlattenedNodesObserver(this.$.linearActionsSlot, (info) => {
-              this._linearActionButtons = Array.from(info.addedNodes.filter(n=>n.nodeType === Node.ELEMENT_NODE && n.hasAttribute("data-action")));
-              this._linearActionButtons.filter(ab => !ab._hooked).forEach(ab => {
-                ab.addEventListener('click', (evt) => this._handleAction(evt));
-              });
-            });
-          }
-        }
-
-        _updateActionsButtons(actionButtons, linearActionButtons, allowedActions) {
-          if (!allowedActions.base) return;
-          let actionBtns = (actionButtons.base || []).concat(linearActionButtons.base || []);
-          actionBtns.forEach(ab => {
-            const actionName = ab.getAttribute('data-action');
-            const action = this.actions.find(a => a.name === actionName);
-            if (!action) {
-              ab.style.display = 'none';
-            } else {
-              ab.disabled = action.disabled;
-              if (action.title) {
-                ab.innerText = action.title;
-              }
-            }
           });
         }
 
-        _handleAction(evt) {
-          this.dispatchEvent(new CustomEvent('step-action', {
-            detail: evt.target.getAttribute('data-action'),
-            bubbles: true
-          }));
-        }
-
-        _computeCurrentIcon(completed, editable, error) {
-          if (error) return this.errorIcon;
-
-          if (completed) {
-            return editable ? this.editableIcon : this.completedIcon;
-          }
-          return this.icon;
-        }
-
-        _errorChanged(invalid) {
-          this.dispatchEvent(new CustomEvent('step-error', {
-            detail: {
-              stpe: this
-            },
-            bubbles: true
-          }));
-        }
-
-        _reset() {
-          this.completed = false;
+        if (this.$.linearActionsSlot) {
+          this._nodeObserver1 = new Polymer.FlattenedNodesObserver(this.$.linearActionsSlot, (info) => {
+            this._linearActionButtons = Array.from(info.addedNodes.filter(n => n.nodeType === Node.ELEMENT_NODE && n.hasAttribute('data-action')));
+            this._linearActionButtons.filter(ab => !ab._hooked).forEach(ab => {
+              ab.addEventListener('click', (evt) => this._handleAction(evt));
+            });
+          });
         }
       }
 
-      window.customElements.define(UdStepElement.is, UdStepElement);
+      _updateActionsButtons(actionButtons, linearActionButtons, allowedActions) {
+        if (!allowedActions.base) return;
+        let actionBtns = (actionButtons.base || []).concat(linearActionButtons.base || []);
+        actionBtns.forEach(ab => {
+          const actionName = ab.getAttribute('data-action');
+          const action = this.actions.find(a => a.name === actionName);
+          if (!action) {
+            ab.style.display = 'none';
+          } else {
+            ab.disabled = action.disabled;
+            if (action.title) {
+              ab.innerText = action.title;
+            }
+          }
+        });
+      }
 
-      /**
-       * @namespace UrDeveloper
-       */
-      window.UrDeveloper = window.UrDeveloper || {};
-      UrDeveloper.UdStepElement = UdStepElement;
+      _handleAction(evt, action) {
+        this.dispatchEvent(new CustomEvent('step-action', {
+          detail: action || evt.target.getAttribute('data-action'),
+          bubbles: true
+        }));
+      }
+
+      _computeCurrentIcon(completed, editable, error) {
+        if (error) return this.errorIcon;
+
+        if (completed) {
+          return editable ? this.editableIcon : this.completedIcon;
+        }
+        return this.icon;
+      }
+
+      _errorChanged(invalid) {
+        this.dispatchEvent(new CustomEvent('step-error', {
+          detail: {
+            stpe: this
+          },
+          bubbles: true
+        }));
+      }
+
+      _reset() {
+        this.completed = false;
+      }
     }
+
+    window.customElements.define(UdStepElement.is, UdStepElement);
+
+    /**
+     * @namespace UrDeveloper
+     */
+    window.UrDeveloper = window.UrDeveloper || {};
+    UrDeveloper.UdStepElement = UdStepElement;
+  }
   </script>
 </dom-module>

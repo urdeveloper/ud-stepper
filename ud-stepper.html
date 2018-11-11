@@ -11,7 +11,7 @@
 <link rel="import" href="../polymer/lib/mixins/mutable-data.html">
 <link rel="import" href="ud-step.html">
 <link rel="import" href="ud-iconset.html">
-<!-- <link rel="import" href="ud-stepper-animate-style.html"> -->
+
 <dom-module id="ud-stepper">
   <template>
     <style include="paper-material-styles">
@@ -33,7 +33,6 @@
     }
 
     /* Horizontal Styles */
-
 
     .header {
       display: flex;
@@ -431,6 +430,7 @@
               name: 'back',
               disabled: i === 0
             });
+
           } else if (step.optional) {
             //In linear stepper, optional step has a skip action
             actions.push({
@@ -476,7 +476,8 @@
 
       _handleStepAction(evt) {
         const actionHandler = this[evt.detail.toLowerCase()];
-        if (actionHandler) actionHandler.apply(this, [evt.target]);
+        const step = evt.path.find(node => this._isStep(node));
+        if (actionHandler && step) actionHandler.apply(this, [step]);
       }
 
       _findNextStep(currentStep) {
