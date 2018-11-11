@@ -11,13 +11,13 @@
 <link rel="import" href="../polymer/lib/mixins/mutable-data.html">
 <link rel="import" href="ud-step.html">
 <link rel="import" href="ud-iconset.html">
-
 <dom-module id="ud-stepper">
   <template>
     <style include="paper-material-styles">
     :host {
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
       --ud-stepper-icon-size: 30px;
       --iron-icon-width: var(--ud-stepper-icon-size);
       --iron-icon-height: var(--ud-stepper-icon-size);
@@ -73,9 +73,9 @@
       flex-direction: row;
       cursor: pointer;
       align-items: center;
+      max-height: var(--ud-stepper-icon-size);
       padding: 24px 24px 24px 24px;
     }
-
 
     .header:hover {
       background-color: var(--google-grey-100);
@@ -148,13 +148,16 @@
     }
 
     /* Vertical Styles */
-
+    :host([vertical]) .header-container {
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: stretch;
+    }
 
     :host([vertical]) [selected] .label {
       background: var(--ud-stepper-header-background, #dedede);
       @apply --ud-stepper-header-selected;
     }
-
 
     :host([vertical]) .header {
       flex-direction: column;
@@ -215,6 +218,11 @@
     :host(:not([animate])) .vertical-step ::slotted(ud-step:not([selected])) {
       display: none;
     }
+
+    :host(:not([animate])) .vertical-step ::slotted(ud-step:not([selected])) {
+      display: none;
+    }
+
 
 
     vertical-step ::slotted(ud-step:not([selected])) {

@@ -193,8 +193,6 @@
             paper-button {
               background: white;
             }
-
-            ;
             </style>
             <ud-stepper linear>
               <ud-step title="Step 1" hide-actions editable>
@@ -217,23 +215,23 @@
               </ud-step>
             </ud-stepper>
           </template>
-          <script>
-          window.addEventListener('WebComponentsReady', function() {
-            app = document.querySelector('#app');
-            app.next = e => {
-              e.target.dispatchEvent(new CustomEvent('step-action', { detail: 'next', bubbles: true, composed: true }));
-            };
-            app.back = e => {
-              e.target.dispatchEvent(new CustomEvent('step-action', { detail: 'back', bubbles: true, composed: true }));
-            };
-          });
-          </script>
+
         </dom-bind>
       </template>
     </demo-snippet>
   </div>
   <script>
   window.addEventListener('WebComponentsReady', function() {
+    console.info('ready');
+    app = document.querySelector('#app');
+
+    app.next = e => {
+      e.target.dispatchEvent(new CustomEvent('step-action', { detail: 'next', bubbles: true, composed: true }));
+    };
+    app.back = e => {
+      e.target.dispatchEvent(new CustomEvent('step-action', { detail: 'back', bubbles: true, composed: true }));
+    };
+
     document.querySelectorAll('paper-button.reset').forEach(rs => {
       rs.addEventListener('tap', (evt) => {
         evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').reset();
@@ -244,11 +242,11 @@
       rs.addEventListener('tap', (evt) => {
         evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').toggleOrientation();
       });
+    });
 
-      document.querySelectorAll('paper-button.toggle-animation').forEach(rs => {
-        rs.addEventListener('tap', (evt) => {
-          evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').toggleAnimation();
-        });
+    document.querySelectorAll('paper-button.toggle-animation').forEach(rs => {
+      rs.addEventListener('tap', (evt) => {
+        evt.target.parentElement.parentElement.parentElement.querySelector('ud-stepper').toggleAnimation();
       });
     });
   });
