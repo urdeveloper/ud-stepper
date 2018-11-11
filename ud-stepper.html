@@ -101,6 +101,14 @@
         max-width: 120px;
       }
 
+      :host(:not([vertical])) .header:hover  {
+        overflow: visible;
+      }
+
+      :host(:not([vertical])) .header:hover .label-text .main {
+        max-width: fit-content;
+      }
+
       .header.selected .label-icon,
       .header[completed] .label-icon {
         color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
