@@ -120,6 +120,10 @@
       background-color: var(--ud-stepper-icon-seleced-color, var(--google-blue-500));
     }
 
+    :host(:not([animate])) ::slotted(ud-step:not([selected])) {
+      display: none;
+    }
+
     /* Vertical Styles */
 
     :host([vertical]) .header-container {
@@ -178,13 +182,9 @@
       height: fit-content;
     }
 
-     :host(:not([animate])) ::slotted(ud-step:not([selected])) {
-        display: none;
-      }
-
     :host(:not([animate])) .vertical-step ::slotted(ud-step:not([selected])) {
-        display: none;
-      }
+      display: none;
+    }
 
 
     vertical-step ::slotted(ud-step:not([selected])) {
@@ -231,9 +231,9 @@
     </iron-selector>
     <dom-if if="[[!vertical]]" restamp>
       <template>
-         <dom-if if="[[animate]]" restamp>
+        <dom-if if="[[animate]]" restamp>
           <template>
-            <neon-animated-pages selected="[[selected]]" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
+            <neon-animated-pages id="pageContainer" selected="[[selected]]" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
               <slot name="horizontal"></slot>
             </neon-animated-pages>
           </template>
@@ -337,9 +337,9 @@
           /* 
            * `_maxHeight` the height of larger step.
            */
-           _maxHeight : {
-             type:  Number,
-             },
+          _maxHeight: {
+            type: Number,
+          },
         };
       }
 
@@ -347,7 +347,7 @@
         return [
           '_setSlotNames(_steps,vertical)',
           '_setHeight(sizing, _maxHeight, vertical, animate)'
-          ]
+        ];
       }
 
       constructor() {
@@ -360,7 +360,7 @@
             Polymer.RenderStatus.afterNextRender(this, () => {
               this._setHeight(this.sizing, this._maxHeight, this.vertical, this.animate);
             });
-            
+
             if (!this.selected) {
               this.selected = 0;
             }
@@ -372,14 +372,9 @@
         super.ready();
         this.addEventListener('step-action', evt => this._handleStepAction(evt));
         this.addEventListener('step-error', evt => {
-          this.notifyPath('_steps')
+          this.notifyPath('_steps');
         });
       }
-
-      // connectedCallback() {
-      //   super.connectedCallback();
-      //   // Note(cg): we need to reset sizing here as $.selector was not properly sized on intial call.
-      // }
 
       _findSteps() {
         return Array.from(this.querySelectorAll('ud-step'));
@@ -388,186 +383,189 @@
       _prepareSteps(steps) {
         let maxHeight = 0;
         steps.forEach((step, i) => {
-            //don't overwrite the step's actions, if they're already set
-            if (step.actions) return;
+          //don't overwrite the step's actions, if they're already set
+          if (step.actions) return;
 
-            //By default all steps have continue and cancel action
-            const actions = [{
-              name: 'continue'
-            }, {
-              name: 'cancel'
-            }];
-            if (!this.linear) {
-              //Disable the back for the first step
-              actions.push({
-                name: 'back',
-                disabled: i === 0
-              });
-            } else if (step.optional) {
-              //In linear stepper, optional step has a skip action
-              actions.push({
-                name: 'skip'
-              });
-            }
-            step.actions = actions;
-
-            const stepHeight = parseInt(getComputedStyle(step).height);
-              if (stepHeight > maxHeight) {
-                maxHeight = stepHeight;
-              }
+          //By default all steps have continue and cancel action
+          const actions = [{
+            name: 'continue'
+          }, {
+            name: 'cancel'
+          }];
+          if (!this.linear) {
+            //Disable the back for the first step
+            actions.push({
+              name: 'back',
+              disabled: i === 0
             });
-          this._maxHeight = maxHeight;
-        }
-
-        /* 
-         * `_setHeight` set height of stepper if sizing === 'contain'. 
-         * This is now necessary as `ud-steps` are absoluted positionned within neon-animated-page. Hence, stepper cannot be aware of its own size.
-         */
-        _setHeight(sizing, maxHeight, vertical, animate) {
-          // Note(cg): this is only useful for horizontal and animated layout (relying on neon-animated-page).
-          if(vertical === true || animate !== true) {
-            this.style.height = null;
-            return;
+          } else if (step.optional) {
+            //In linear stepper, optional step has a skip action
+            actions.push({
+              name: 'skip'
+            });
           }
+          step.actions = actions;
 
-          if (sizing === 'contain' && maxHeight ) {
-            this.style.height = this.$.selector.getBoundingClientRect().height + maxHeight + 3 + 'px';
+          const stepHeight = parseInt(getComputedStyle(step).height);
+          if (stepHeight > maxHeight) {
+            maxHeight = stepHeight;
           }
+        });
+        this._maxHeight = maxHeight;
+      }
+
+      /* 
+       * `_setHeight` set height of stepper if sizing === 'contain'. 
+       * This is now necessary as `ud-steps` are absoluted positionned within neon-animated-page. Hence, stepper cannot be aware of its own size.
+       */
+      _setHeight(sizing, maxHeight, vertical, animate) {
+        // Note(cg): this is only useful for horizontal and animated layout (relying on neon-animated-page).
+        const pageContainer = this.shadowRoot.querySelector('#pageContainer');
+        if(!pageContainer) {return;}
+        if (vertical === true || animate !== true) {
+          pageContainer.style.height = null;
+          return;
         }
 
-        _isStep(node) {
-          return node.nodeType === Node.ELEMENT_NODE && /ud-step/i.test(node.localName);
-        }
-
-        _getStepNumber(index) {
-          return index + 1;
-        }
-
-        _handleStepAction(evt) {
-          const actionHandler = this[evt.detail.toLowerCase()];
-          if (actionHandler) actionHandler.apply(this, [evt.target]);
-        }
-
-        _findNextStep(currentStep) {
-          if (currentStep == this._steps.length - 1) return currentStep;
-          //if it's a linear stepper, find the next not completed or editable step
-          if (this.linear) {
-            let index = currentStep + 1;
-            while (index < this._steps.length - 1) {
-              let step = this._steps[index];
-              if (step.editable || !step.completed) {
-                return index;
-              }
-              index++;
-            }
-            return index;
-          } else {
-            return currentStep + 1;
-          }
-        }
-
-        /**
-         * Go to the next available step
-         */
-        next() {
-          if (!this._steps) return;
-          this.continue(this._steps[this.selected]);
-        }
-
-        /** @protected */
-        continue (step) {
-          if (this.linear && step.error) return;
-          step.completed = true;
-          this.notifyPath('_steps');
-          this.selected = this._findNextStep(this.selected);
-        }
-
-        /** @protected */
-        back(step) {
-          if (this.selected > 0) {
-            this.selected = this.selected - 1;
-          }
-        }
-
-        /** @protected */
-        skip(step) {
-          this.selected = this._findNextStep(this.selected);
-        }
-
-        /** @protected */
-        cancel(step) {
-
-        }
-
-        /**
-         * Reset the stepper and all its steps to the initial state.
-         */
-        reset() {
-          this.selected = 0;
-          this._steps.forEach(s => s._reset());
-          this.notifyPath('_steps');
-        }
-
-        /**
-         * Toggle the orientation between horizontal and vertical
-         */
-        toggleOrientation() {
-          this.vertical = !this.vertical;
-        }
-
-        /**
-         * Toggle the animation 
-         */
-        toggleAnimation() {
-          this.animate = !this.animate;
-        }
-
-        _handleStepActivate(evt) {
-          /*
-           * the logic here:
-           * User is allowed to select any step if stepper is not linear
-           * If stepper is linear: 
-           *  - allow user to revisit a completed editable step
-           *  - allow user to revist an optional step as long as is not completed
-           */
-          if (this.linear) {
-            const step = this._steps[evt.detail.selected];
-            if (!step) return;
-            if ((step.completed && step.editable) || (!step.completed && step.optional)) {
-              return;
-            }
-            evt.preventDefault();
-          }
-        }
-
-        _setSlotNames(steps, vertical) {
-          if (!this._steps) return;
-          steps.forEach((step, i) => {
-            step.setAttribute('slot', this.vertical ? 'slot' + i : 'horizontal');
-          });
-        }
-
-        _selectionChanged(selected) {
-
-          this._steps.forEach((step, i) => {
-            step.selected = i == selected;
-          });
-        }
-
-        _isCompleted(steps) {
-          if (!steps || steps.length === 0) return false;
-          //stepper is completed when all non-optional steps are completed.
-          return steps.filter(s => s.completed || s.optional).length == steps.length;
+        if (sizing === 'contain' && maxHeight) {
+          pageContainer.style.height = maxHeight + 3 + 'px';
+          // this.style.height = this.$.selector.getBoundingClientRect().height + maxHeight + 3 + 'px';
         }
       }
 
-      window.customElements.define(UdStepperElement.is, UdStepperElement);
+      _isStep(node) {
+        return node.nodeType === Node.ELEMENT_NODE && /ud-step/i.test(node.localName);
+      }
+
+      _getStepNumber(index) {
+        return index + 1;
+      }
+
+      _handleStepAction(evt) {
+        const actionHandler = this[evt.detail.toLowerCase()];
+        if (actionHandler) actionHandler.apply(this, [evt.target]);
+      }
+
+      _findNextStep(currentStep) {
+        if (currentStep == this._steps.length - 1) return currentStep;
+        //if it's a linear stepper, find the next not completed or editable step
+        if (this.linear) {
+          let index = currentStep + 1;
+          while (index < this._steps.length - 1) {
+            let step = this._steps[index];
+            if (step.editable || !step.completed) {
+              return index;
+            }
+            index++;
+          }
+          return index;
+        } else {
+          return currentStep + 1;
+        }
+      }
 
       /**
-       * @namespace UrDeveloper
+       * Go to the next available step
        */
-      window.UrDeveloper = window.UrDeveloper || {};
-      UrDeveloper.UdStepperElement = UdStepperElement;
+      next() {
+        if (!this._steps) return;
+        this.continue(this._steps[this.selected]);
+      }
+
+      /** @protected */
+      continue (step) {
+        if (this.linear && step.error) return;
+        step.completed = true;
+        this.notifyPath('_steps');
+        this.selected = this._findNextStep(this.selected);
+      }
+
+      /** @protected */
+      back(step) {
+        if (this.selected > 0) {
+          this.selected = this.selected - 1;
+        }
+      }
+
+      /** @protected */
+      skip(step) {
+        this.selected = this._findNextStep(this.selected);
+      }
+
+      /** @protected */
+      cancel(step) {
+
+      }
+
+      /**
+       * Reset the stepper and all its steps to the initial state.
+       */
+      reset() {
+        this.selected = 0;
+        this._steps.forEach(s => s._reset());
+        this.notifyPath('_steps');
+      }
+
+      /**
+       * Toggle the orientation between horizontal and vertical
+       */
+      toggleOrientation() {
+        this.vertical = !this.vertical;
+      }
+
+      /**
+       * Toggle the animation 
+       */
+      toggleAnimation() {
+        this.animate = !this.animate;
+      }
+
+      _handleStepActivate(evt) {
+        /*
+         * the logic here:
+         * User is allowed to select any step if stepper is not linear
+         * If stepper is linear: 
+         *  - allow user to revisit a completed editable step
+         *  - allow user to revist an optional step as long as is not completed
+         */
+        if (this.linear) {
+          const step = this._steps[evt.detail.selected];
+          if (!step) return;
+          if ((step.completed && step.editable) || (!step.completed && step.optional)) {
+            return;
+          }
+          evt.preventDefault();
+        }
+      }
+
+      _setSlotNames(steps, vertical) {
+        if (!this._steps) return;
+        steps.forEach((step, i) => {
+          step.setAttribute('slot', this.vertical ? 'slot' + i : 'horizontal');
+        });
+      }
+
+      _selectionChanged(selected) {
+
+        this._steps.forEach((step, i) => {
+          step.selected = i == selected;
+        });
+      }
+
+      _isCompleted(steps) {
+        if (!steps || steps.length === 0) return false;
+        //stepper is completed when all non-optional steps are completed.
+        return steps.filter(s => s.completed || s.optional).length == steps.length;
+      }
     }
+
+    window.customElements.define(UdStepperElement.is, UdStepperElement);
+
+    /**
+     * @namespace UrDeveloper
+     */
+    window.UrDeveloper = window.UrDeveloper || {};
+    UrDeveloper.UdStepperElement = UdStepperElement;
+  }
   </script>
 </dom-module>
