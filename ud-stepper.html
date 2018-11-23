@@ -99,7 +99,7 @@
     iron-icon {
       --iron-icon-width:  var(--ud-stepper-icon-size);
       --iron-icon-height:  var(--ud-stepper-icon-size);
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
 
     .label-text {
@@ -143,20 +143,14 @@
       @apply --paper-font-body2;
     }
 
-    .header[error] .label-text,
     .header[error] .label-circle {
-      background-color: var(--ud-stepper-icon-error-color, --paper-deep-orange-a700);
+      background-color: var(--ud-stepper-icon-error-color, var(--paper-deep-orange-a700));
+    }
+    .header[error] .label-text {
+      color: var(--ud-stepper-icon-error-color, var(--paper-deep-orange-a700));
     }
 
     .step-number {
-      /*color: white;
-      background-color: rgba(0, 0, 0, 0.38);
-      border-radius: 50%;
-      line-height: var(--ud-stepper-icon-size);
-      width: var(--ud-stepper-icon-size);
-      height: var(--ud-stepper-icon-size);
-      max-height: var(--ud-stepper-icon-size);
-      max-width: var(--ud-stepper-icon-size);*/
     }
 
     .header.selected .step-number {
