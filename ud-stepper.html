@@ -404,6 +404,8 @@
             if (!this.selected) {
               this.selected = 0;
             }
+            // Note(cg): without call to _selectionChanges,  selected step is not marked as selected.
+            this._selectionChanged(this.selected);
           }
         });
       }
