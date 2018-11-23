@@ -22,6 +22,10 @@
       --iron-icon-width: var(--ud-stepper-icon-size);
       --iron-icon-height: var(--ud-stepper-icon-size);
     }
+  
+    #pageContainer {
+      min-height: var(--ud-stepper-container-min-height);
+    }
 
     .header-container {
       display: flex;
@@ -300,6 +304,7 @@
      * `--ud-stepper-icon-completed-color` | The icon color of a completed step | `--google-blue-500`
      * `--ud-stepper-icon-error-color` | The icon color of a step with error | `--paper-deep-orange-a700`
      * `--ud-stepper-icon-selected-color` | The icon color of a selected step | `--google-blue-500`
+     * `--ud-stepper-container-min-height` | Height applied to #pageContainer | 
      * `--ud-stepper-selected-header-background` | The color of a selected header label  | `--google-grey-300`
      * `--ud-stepper-selected-header` | Style mixin for selected header | `{}`
      *
@@ -366,19 +371,20 @@
           },
 
           /* 
-           * `sizing` string | null | undefined = null
+           * `sizing` 
            * Sets a sizing option for the stepper. 
            * Valid values is `contain` (will set the height of the stepper so as to contain the larger ud-step).
+           * or ``
            */
           sizing: {
             type: String
           },
 
           /* 
-           * `_maxHeight` the height of larger step.
+           * `containerHeight` the height of the container. with anilated steps, should be set or sizing should be 'contain'
            */
-          _maxHeight: {
-            type: Number,
+          containerHeight: {
+            type: Number
           },
         };
       }
@@ -386,7 +392,7 @@
       static get observers() {
         return [
           '_setSlotNames(_steps,vertical)',
-          '_setHeight(sizing, _maxHeight, vertical, animate)'
+          '_setHeight(sizing, containerHeight, vertical, animate)'
         ];
       }
 
@@ -454,14 +460,16 @@
             maxHeight = stepHeight;
           }
         });
-        this._maxHeight = maxHeight;
+        if(this.sizing === 'contain') {
+          this.containerHeight = maxHeight;
+        }
       }
 
       /* 
        * `_setHeight` set height of stepper if sizing === 'contain'. 
        * This is now necessary as `ud-steps` are absoluted positionned within neon-animated-page. Hence, stepper cannot be aware of its own size.
        */
-      _setHeight(sizing, maxHeight, vertical, animate) {
+      _setHeight(sizing, containerHeight, vertical, animate) {
         // Note(cg): this is only useful for horizontal and animated layout (relying on neon-animated-page).
         const pageContainer = this.shadowRoot.querySelector('#pageContainer');
         if (!pageContainer) { return; }
@@ -470,9 +478,8 @@
           return;
         }
 
-        if (sizing === 'contain' && maxHeight) {
-          pageContainer.style.height = maxHeight + 3 + 'px';
-          // this.style.height = this.$.selector.getBoundingClientRect().height + maxHeight + 3 + 'px';
+        if (sizing === 'contain' && containerHeight) {
+          pageContainer.style.height = containerHeight + 3 + 'px';
         }
       }
 
