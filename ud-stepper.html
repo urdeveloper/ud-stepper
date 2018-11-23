@@ -119,11 +119,14 @@
     }
 
 
-    :host(:not([vertical])) .header:hover {
+    :host(:not([vertical])) .header:hover,  
+    :host(:not([vertical])) .header[selected] {
       overflow: visible;
     }
 
-    :host(:not([vertical])) .header:hover .label-text .main {
+    :host(:not([vertical])) .header:hover .label-text .main,
+    :host(:not([vertical])) .header[selected] .label-text .main 
+    {
       max-width: fit-content;
     }
 
@@ -202,7 +205,7 @@
       display: inline-block;
       position: relative;
       width: 1px;
-      left: 3px;
+      left: 6px;
       margin-top: -10px;
       margin-bottom: -16px;
       background-color: rgba(0, 0, 0, 0.1);
