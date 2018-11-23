@@ -594,11 +594,12 @@
          * If stepper is linear: 
          *  - allow user to revisit a completed editable step
          *  - allow user to revist an optional step as long as is not completed
+         *  - bypass this logic for `always-selectable`
          */
         if (this.linear) {
           const step = this._steps[evt.detail.selected];
           if (!step) return;
-          if ((step.completed && step.editable) || (!step.completed && step.optional)) {
+          if ((step.completed && step.editable) || (!step.completed && step.optional) || step.alwaysSelectable) {
             return;
           }
           evt.preventDefault();
