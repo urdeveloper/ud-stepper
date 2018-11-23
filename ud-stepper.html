@@ -588,7 +588,7 @@
       }
 
       _selectionChanged(selected) {
-
+        if (!this._steps) return;
         this._steps.forEach((step, i) => {
           step.selected = i == selected;
         });
