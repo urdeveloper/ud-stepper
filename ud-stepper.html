@@ -18,9 +18,8 @@
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
-      --ud-stepper-icon-size: 30px;
-      --iron-icon-width: var(--ud-stepper-icon-size);
-      --iron-icon-height: var(--ud-stepper-icon-size);
+      --ud-stepper-circle-size: 30px;
+      --ud-stepper-icon-size: 18px;
     }
   
     #pageContainer {
@@ -85,11 +84,22 @@
       background-color: var(--google-grey-100);
     }
 
-    .label-icon {
-      color: rgba(0, 0, 0, 0.38);
+    .label-circle {
       @apply --paper-font-caption;
       text-align: center;
       line-height: 24px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.38);
+      border-radius: 50%;
+      line-height: var(--ud-stepper-circle-size);
+      width: var(--ud-stepper-circle-size);
+      height: var(--ud-stepper-circle-size);
+    }
+
+    iron-icon {
+      --iron-icon-width:  var(--ud-stepper-icon-size);
+      --iron-icon-height:  var(--ud-stepper-icon-size);
+      margin-bottom: 2px;
     }
 
     .label-text {
@@ -117,9 +127,11 @@
       max-width: fit-content;
     }
 
-    .header.selected .label-icon,
-    .header[completed] .label-icon {
-      color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
+    .header[completed] .label-circle {
+      background-color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
+    }
+    .header.selected .label-circle   {
+      background-color: var(--ud-stepper-icon-selected-color, var(--google-blue-500));
     }
 
     .header.selected .label-text,
@@ -132,19 +144,19 @@
     }
 
     .header[error] .label-text,
-    .header[error] .label-icon {
-      color: var(--ud-stepper-icon-error-color, --paper-deep-orange-a700);
+    .header[error] .label-circle {
+      background-color: var(--ud-stepper-icon-error-color, --paper-deep-orange-a700);
     }
 
     .step-number {
-      color: white;
+      /*color: white;
       background-color: rgba(0, 0, 0, 0.38);
       border-radius: 50%;
       line-height: var(--ud-stepper-icon-size);
       width: var(--ud-stepper-icon-size);
       height: var(--ud-stepper-icon-size);
       max-height: var(--ud-stepper-icon-size);
-      max-width: var(--ud-stepper-icon-size);
+      max-width: var(--ud-stepper-icon-size);*/
     }
 
     .header.selected .step-number {
@@ -243,7 +255,7 @@
         <template>
           <div class="header selectable" completed$="[[item.completed]]" error$="[[item.error]]">
             <div class="label">
-              <div class="label-icon">
+              <div class="label-circle">
                 <dom-if if="[[item._currentIcon]]">
                   <template>
                     <iron-icon icon="[[item._currentIcon]]"></iron-icon>
@@ -309,6 +321,8 @@
      * `--ud-stepper-icon-completed-color` | The icon color of a completed step | `--google-blue-500`
      * `--ud-stepper-icon-error-color` | The icon color of a step with error | `--paper-deep-orange-a700`
      * `--ud-stepper-icon-selected-color` | The icon color of a selected step | `--google-blue-500`
+     * `--ud-stepper-icon-circle-size` | size of circle | `30px`
+     * `--ud-stepper-icon-icon-size` | size of icon within circle | `18px`
      * `--ud-stepper-container-min-height` | Height applied to #pageContainer | 
      * `--ud-stepper-selected-header-background` | The color of a selected header label  | `--google-grey-300`
      * `--ud-stepper-selected-header` | Style mixin for selected header | `{}`
