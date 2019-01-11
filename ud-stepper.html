@@ -11,7 +11,6 @@
 <link rel="import" href="../polymer/lib/mixins/mutable-data.html">
 <link rel="import" href="ud-step.html">
 <link rel="import" href="ud-iconset.html">
-<!-- <link rel="import" href="ud-stepper-animate-style.html"> -->
 <dom-module id="ud-stepper">
   <template>
     <style include="paper-material-styles">
@@ -19,6 +18,12 @@
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
+      --ud-stepper-circle-size: 30px;
+      --ud-stepper-icon-size: 18px;
+    }
+  
+    #pageContainer {
+      min-height: var(--ud-stepper-container-min-height);
     }
 
     .header-container {
@@ -37,11 +42,14 @@
       flex-direction: row;
       justify-content: center;
       overflow: hidden;
-    }
-
-    :host(:not([vertical])) .header:not(:last-of-type) {
       flex: 1;
     }
+
+    :host(:not([vertical])) .header[selected] {
+      background: var(--ud-stepper-selected-header-background, var(--google-grey-300));
+      @apply --ud-stepper-selected-header;
+    }
+
 
     :host(:not([vertical])) .header:not(:last-of-type)::after {
       content: '';
@@ -50,8 +58,16 @@
       flex: 1;
       top: 36px;
       height: 1px;
-      margin-left: -12px;
-      width: 200px;
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    :host(:not([vertical])) .header:not(:first-of-type)::before {
+      content: '';
+      display: inline-block;
+      position: relative;
+      flex: 1;
+      top: 36px;
+      height: 1px;
       background-color: rgba(0, 0, 0, 0.1);
     }
 
@@ -60,22 +76,34 @@
       flex-direction: row;
       cursor: pointer;
       align-items: center;
+      max-height: var(--ud-stepper-icon-size);
       padding: 24px 24px 24px 24px;
     }
 
-    .header .label:hover {
-      background-color: #f0f0f0;
+    .header:hover {
+      background-color: var(--google-grey-100);
     }
 
-    .label-icon {
-      color: rgba(0, 0, 0, 0.38);
+    .label-circle {
       @apply --paper-font-caption;
       text-align: center;
       line-height: 24px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.38);
+      border-radius: 50%;
+      line-height: var(--ud-stepper-circle-size);
+      width: var(--ud-stepper-circle-size);
+      height: var(--ud-stepper-circle-size);
+    }
+
+    iron-icon {
+      --iron-icon-width:  var(--ud-stepper-icon-size);
+      --iron-icon-height:  var(--ud-stepper-icon-size);
+      margin-bottom: 4px;
     }
 
     .label-text {
-      @apply --paper-font-body2;
+      @apply --paper-font-body1;
       padding-left: 8px;
       color: rgba(0, 0, 0, 0.54);
     }
@@ -90,34 +118,46 @@
       max-width: 120px;
     }
 
-    .header.selected .label-icon,
-    .header[completed] .label-icon {
-      color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
+
+    :host(:not([vertical])) .header:hover,  
+    :host(:not([vertical])) .header[selected] {
+      overflow: visible;
+    }
+
+    :host(:not([vertical])) .header:hover .label-text .main,
+    :host(:not([vertical])) .header[selected] .label-text .main 
+    {
+      max-width: fit-content;
+    }
+
+    .header[completed] .label-circle {
+      background-color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
+    }
+    .header.selected .label-circle   {
+      background-color: var(--ud-stepper-icon-selected-color, var(--google-blue-500));
     }
 
     .header.selected .label-text,
     .header[completed] .label-text {
       color: rgba(0, 0, 0, 0.87);
     }
+    
+    .header.selected .label-text {
+      @apply --paper-font-body2;
+    }
 
-    .header[error] .label-text,
-    .header[error] .label-icon {
-      color: var(--ud-stepper-icon-error-color, --paper-deep-orange-a700);
+    .header[error] .label-circle {
+      background-color: var(--ud-stepper-icon-error-color, var(--paper-deep-orange-a700));
+    }
+    .header[error] .label-text {
+      color: var(--ud-stepper-icon-error-color, var(--paper-deep-orange-a700));
     }
 
     .step-number {
-      color: white;
-      background-color: rgba(0, 0, 0, 0.38);
-      border-radius: 50%;
-      line-height: 24px;
-      width: 24px;
-      height: 24px;
-      max-height: 24px;
-      max-width: 24px;
     }
 
     .header.selected .step-number {
-      background-color: var(--ud-stepper-icon-seleced-color, var(--google-blue-500));
+      background-color: var(--ud-stepper-icon-selected-color, var(--google-blue-500));
     }
 
     :host(:not([animate])) ::slotted(ud-step:not([selected])) {
@@ -125,11 +165,22 @@
     }
 
     /* Vertical Styles */
-
     :host([vertical]) .header-container {
       flex-direction: column;
       flex-wrap: nowrap;
       align-items: stretch;
+    }
+
+    :host([vertical]) [selected] .label {
+      background: var(--ud-stepper-header-background, #dedede);
+      @apply --paper-font-body2;
+      @apply --ud-stepper-header-selected;
+    }
+
+    :host([vertical]) .header {
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: visible;
     }
 
     :host([vertical]) .header {
@@ -154,7 +205,7 @@
       display: inline-block;
       position: relative;
       width: 1px;
-      left: 3px;
+      left: 6px;
       margin-top: -10px;
       margin-bottom: -16px;
       background-color: rgba(0, 0, 0, 0.1);
@@ -186,6 +237,11 @@
       display: none;
     }
 
+    :host(:not([animate])) .vertical-step ::slotted(ud-step:not([selected])) {
+      display: none;
+    }
+
+
 
     vertical-step ::slotted(ud-step:not([selected])) {
       display: none;
@@ -196,7 +252,7 @@
         <template>
           <div class="header selectable" completed$="[[item.completed]]" error$="[[item.error]]">
             <div class="label">
-              <div class="label-icon">
+              <div class="label-circle">
                 <dom-if if="[[item._currentIcon]]">
                   <template>
                     <iron-icon icon="[[item._currentIcon]]"></iron-icon>
@@ -261,7 +317,12 @@
      * `--ud-stepper-header-container-style` | Style mixin for the header container | `{}`
      * `--ud-stepper-icon-completed-color` | The icon color of a completed step | `--google-blue-500`
      * `--ud-stepper-icon-error-color` | The icon color of a step with error | `--paper-deep-orange-a700`
-     * `--ud-stepper-icon-seleced-color` | The icon color of a selected step | `--google-blue-500`
+     * `--ud-stepper-icon-selected-color` | The icon color of a selected step | `--google-blue-500`
+     * `--ud-stepper-icon-circle-size` | size of circle | `30px`
+     * `--ud-stepper-icon-icon-size` | size of icon within circle | `18px`
+     * `--ud-stepper-container-min-height` | Height applied to #pageContainer | 
+     * `--ud-stepper-selected-header-background` | The color of a selected header label  | `--google-grey-300`
+     * `--ud-stepper-selected-header` | Style mixin for selected header | `{}`
      *
      * @customElement
      * @polymer
@@ -326,19 +387,20 @@
           },
 
           /* 
-           * `sizing` string | null | undefined = null
+           * `sizing` 
            * Sets a sizing option for the stepper. 
            * Valid values is `contain` (will set the height of the stepper so as to contain the larger ud-step).
+           * or ``
            */
           sizing: {
             type: String
           },
 
           /* 
-           * `_maxHeight` the height of larger step.
+           * `containerHeight` the height of the container. with anilated steps, should be set or sizing should be 'contain'
            */
-          _maxHeight: {
-            type: Number,
+          containerHeight: {
+            type: Number
           },
         };
       }
@@ -346,7 +408,7 @@
       static get observers() {
         return [
           '_setSlotNames(_steps,vertical)',
-          '_setHeight(sizing, _maxHeight, vertical, animate)'
+          '_setHeight(sizing, containerHeight, vertical, animate)'
         ];
       }
 
@@ -364,6 +426,8 @@
             if (!this.selected) {
               this.selected = 0;
             }
+            // Note(cg): without call to _selectionChanges,  selected step is not marked as selected.
+            this._selectionChanged(this.selected);
           }
         });
       }
@@ -398,6 +462,7 @@
               name: 'back',
               disabled: i === 0
             });
+
           } else if (step.optional) {
             //In linear stepper, optional step has a skip action
             actions.push({
@@ -411,25 +476,26 @@
             maxHeight = stepHeight;
           }
         });
-        this._maxHeight = maxHeight;
+        if(this.sizing === 'contain') {
+          this.containerHeight = maxHeight;
+        }
       }
 
       /* 
        * `_setHeight` set height of stepper if sizing === 'contain'. 
        * This is now necessary as `ud-steps` are absoluted positionned within neon-animated-page. Hence, stepper cannot be aware of its own size.
        */
-      _setHeight(sizing, maxHeight, vertical, animate) {
+      _setHeight(sizing, containerHeight, vertical, animate) {
         // Note(cg): this is only useful for horizontal and animated layout (relying on neon-animated-page).
         const pageContainer = this.shadowRoot.querySelector('#pageContainer');
-        if(!pageContainer) {return;}
+        if (!pageContainer) { return; }
         if (vertical === true || animate !== true) {
           pageContainer.style.height = null;
           return;
         }
 
-        if (sizing === 'contain' && maxHeight) {
-          pageContainer.style.height = maxHeight + 3 + 'px';
-          // this.style.height = this.$.selector.getBoundingClientRect().height + maxHeight + 3 + 'px';
+        if (sizing === 'contain' && containerHeight) {
+          pageContainer.style.height = containerHeight + 3 + 'px';
         }
       }
 
@@ -443,7 +509,8 @@
 
       _handleStepAction(evt) {
         const actionHandler = this[evt.detail.toLowerCase()];
-        if (actionHandler) actionHandler.apply(this, [evt.target]);
+        const step = evt.path.find(node => this._isStep(node));
+        if (actionHandler && step) actionHandler.apply(this, [step]);
       }
 
       _findNextStep(currentStep) {
@@ -527,11 +594,12 @@
          * If stepper is linear: 
          *  - allow user to revisit a completed editable step
          *  - allow user to revist an optional step as long as is not completed
+         *  - bypass this logic for `always-selectable`
          */
         if (this.linear) {
           const step = this._steps[evt.detail.selected];
           if (!step) return;
-          if ((step.completed && step.editable) || (!step.completed && step.optional)) {
+          if ((step.completed && step.editable) || (!step.completed && step.optional) || step.alwaysSelectable) {
             return;
           }
           evt.preventDefault();
@@ -546,7 +614,7 @@
       }
 
       _selectionChanged(selected) {
-
+        if (!this._steps) return;
         this._steps.forEach((step, i) => {
           step.selected = i == selected;
         });
