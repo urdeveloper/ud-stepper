@@ -602,7 +602,10 @@
           if ((step.completed && step.editable) || (!step.completed && step.optional) || step.alwaysSelectable) {
             return;
           }
-          evt.preventDefault();
+          // Only call preventDefault() if the event comes from our own iron-selector
+          if (evt.target.id === "selector" && evt.target.selectable === ".header.selectable") {
+            evt.preventDefault();
+          }
         }
       }
 
