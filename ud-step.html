@@ -55,6 +55,12 @@
       color: rgba(0, 0, 0, 0.50);
       background-color: transparent;
     }
+
+    paper-button:focus, 
+    #actions ::slotted(paper-button:focus) {
+      background-color: var(--google-grey-300);
+
+    }
     </style>
     <div id="content">
       <slot></slot>
