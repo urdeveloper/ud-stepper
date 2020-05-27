@@ -11,16 +11,15 @@
 <link rel="import" href="../polymer/lib/mixins/mutable-data.html">
 <link rel="import" href="ud-step.html">
 <link rel="import" href="ud-iconset.html">
-
 <dom-module id="ud-stepper-button">
-  <template>
+  <!--  <template>
     <style>
       host: {
         display: block
       }
     </style>
     <slot></slot>
-  </template>
+  </template> -->
   <script>
   (function() {
     /**
@@ -28,18 +27,17 @@
      *  private element to make sure we capture 'spacebar' downkey event when the 
      *  element has focus. This is similar to how paper-tab work. 
      */
-    class UdStepperButton extends 
-     Polymer.mixinBehaviors(Polymer.IronButtonState, Polymer.Element) {
+    class UdStepperButton extends
+    Polymer.mixinBehaviors(Polymer.IronButtonState, Polymer.Element) {
       static get is() {
         return 'ud-stepper-button';
       }
     }
-     customElements.define(UdStepperButton.is, UdStepperButton);
+    customElements.define(UdStepperButton.is, UdStepperButton);
   })();
-    
+
   </script>
 </dom-module>
-
 <dom-module id="ud-stepper">
   <template>
     <style include="paper-material-styles">
@@ -50,7 +48,7 @@
       --ud-stepper-circle-size: 30px;
       --ud-stepper-icon-size: 18px;
     }
-  
+
     #pageContainer {
       min-height: var(--ud-stepper-container-min-height);
     }
@@ -109,8 +107,11 @@
       padding: 24px 24px 24px 24px;
     }
 
-    .header:hover {
+    .header:hover,
+    .header:focus {
       background-color: var(--google-grey-100);
+      font-weight: 500;
+      /*outline: none;*/
     }
 
     .label-circle {
@@ -126,13 +127,13 @@
     }
 
     iron-icon {
-      --iron-icon-width:  var(--ud-stepper-icon-size);
-      --iron-icon-height:  var(--ud-stepper-icon-size);
+      --iron-icon-width: var(--ud-stepper-icon-size);
+      --iron-icon-height: var(--ud-stepper-icon-size);
       margin-bottom: 4px;
     }
 
     .label-text {
-      @apply --paper-font-body1;
+      /*@apply --paper-font-body1;*/
       padding-left: 8px;
       color: rgba(0, 0, 0, 0.54);
     }
@@ -148,21 +149,21 @@
     }
 
 
-    :host(:not([vertical])) .header:hover,  
+    :host(:not([vertical])) .header:hover,
     :host(:not([vertical])) .header[aria-selected] {
       overflow: visible;
     }
 
     :host(:not([vertical])) .header:hover .label-text .main,
-    :host(:not([vertical])) .header[aria-selected] .label-text .main 
-    {
+    :host(:not([vertical])) .header[aria-selected] .label-text .main {
       max-width: fit-content;
     }
 
     .header[aria-checked] .label-circle {
       background-color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
     }
-    .header[aria-selected] .label-circle   {
+
+    .header[aria-selected] .label-circle {
       background-color: var(--ud-stepper-icon-selected-color, var(--google-blue-500));
     }
 
@@ -170,7 +171,7 @@
     .header[aria-checked] .label-text {
       color: rgba(0, 0, 0, 0.87);
     }
-    
+
     .header[aria-selected] .label-text {
       @apply --paper-font-body2;
     }
@@ -178,12 +179,12 @@
     .header[aria-invalid] .label-circle {
       background-color: var(--ud-stepper-icon-error-color, var(--paper-deep-orange-a700));
     }
+
     .header[aria-invalid] .label-text {
       color: var(--ud-stepper-icon-error-color, var(--paper-deep-orange-a700));
     }
 
-    .step-number {
-    }
+    .step-number {}
 
     .header.selected .step-number {
       background-color: var(--ud-stepper-icon-selected-color, var(--google-blue-500));
@@ -275,61 +276,46 @@
     vertical-step ::slotted(ud-step:not([selected])) {
       display: none;
     }
+
     </style>
     <div class="header-container" role="tablist">
-      <dom-repeat items="[[_steps]]" mutable-data>
-        <template>
-          <ud-stepper-button class="header selectable" role="tab" aria-checked="[[item.completed]]" aria-disabled="[[item.disabled]]" aria-invalid$="[[item.error]]">
-            <div class="label">
-              <div class="label-circle">
-                <dom-if if="[[item._currentIcon]]">
-                  <template>
-                    <iron-icon icon="[[item._currentIcon]]"></iron-icon>
-                  </template>
-                </dom-if>
-                <dom-if if="[[!item._currentIcon]]">
-                  <template>
-                    <div class="step-number">[[_getStepNumber(index)]]</div>
-                  </template>
-                </dom-if>
-              </div>
-              <div class="label-text">
-                <div class="main">[[item.title]]</div>
-                <div class="summary">[[item.summary]]</div>
-                <dom-if if="[[item.optional]]">
-                  <template>
-                    <div class="optional">[[item.optionalText]]</div>
-                  </template>
-                </dom-if>
-              </div>
-            </div>
-            <dom-if if="[[vertical]]" restamp>
-              <template>
-                <div class="vertical-step step-container" visible$="[[item.selected]]">
-                  <slot name="slot[[index]]"></slot>
-                </div>
+      <template is="dom-repeat" items="[[_steps]]" mutable-data>
+        <ud-stepper-button class="header selectable" role="tab" aria-checked="[[item.completed]]" aria-disabled="[[item.disabled]]" aria-invalid$="[[item.error]]">
+          <div class="label">
+            <div class="label-circle">
+              <template is="dom-if" if="[[item._currentIcon]]">
+                <iron-icon icon="[[item._currentIcon]]"></iron-icon>
               </template>
-            </dom-if>
-          </ud-stepper-button>
-        </template>
-      </dom-repeat>
-    </div>
-    <dom-if if="[[!vertical]]" restamp>
-      <template>
-        <dom-if if="[[animate]]" restamp>
-          <template>
-            <neon-animated-pages id="pageContainer" selected="[[selected]]" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
-              <slot name="horizontal"></slot>
-            </neon-animated-pages>
+              <template is="dom-if" if="[[!item._currentIcon]]">
+                <div class="step-number">[[_getStepNumber(index)]]</div>
+              </template>
+            </div>
+            <div class="label-text">
+              <div class="main">[[item.title]]</div>
+              <div class="summary">[[item.summary]]</div>
+              <template is="dom-if" if="[[item.optional]]">
+                <div class="optional">[[item.optionalText]]</div>
+              </template>
+            </div>
+          </div>
+          <template is="dom-if" if="[[vertical]]" restamp>
+            <div class="vertical-step step-container" visible$="[[item.selected]]">
+              <slot name$="slot[[index]]"></slot>
+            </div>
           </template>
-        </dom-if>
-        <dom-if if="[[!animate]]" restamp>
-          <template>
-            <slot name="horizontal"></slot>
-          </template>
-        </dom-if>
+        </ud-stepper-button>
       </template>
-    </dom-if>
+    </div>
+    <template is="dom-if" if="[[!vertical]]" restamp>
+      <!-- <template is="dom-if" if="[[animate]]" restamp> -->
+        <neon-animated-pages id="pageContainer" selected="[[selected]]" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
+          <slot name="horizontal"></slot>
+        </neon-animated-pages>
+      <!-- </template> -->
+      <!-- <template is="dom-if" if="[[!animate]]" restamp>
+        <slot name="horizontal"></slot>
+      </template> -->
+    </template>
   </template>
   <script>
   {
@@ -366,10 +352,10 @@
      * @memberof UrDeveloper
      * @demo demo/index.html
      */
-    class UdStepperElement extends 
+    class UdStepperElement extends
     Polymer.mixinBehaviors(Polymer.IronMenubarBehavior,
       Polymer.MutableData(
-          Polymer.Element)) {
+        Polymer.Element)) {
 
       static get is() {
         return 'ud-stepper';
@@ -445,12 +431,12 @@
           },
 
           selectable: {
-            type: String, 
+            type: String,
             value: '.header.selectable'
           },
 
           selectedAttribute: {
-            type: String, 
+            type: String,
             value: 'active'
           }
         };
@@ -458,7 +444,7 @@
 
       static get observers() {
         return [
-          '_setSlotNames(_steps,vertical)',
+          '_setSlotNames(_steps, vertical)',
           '_setHeight(sizing, containerHeight, vertical, animate)'
         ];
       }
@@ -468,7 +454,7 @@
         this.addEventListener('step-action', evt => this._handleStepAction(evt));
         this.addEventListener('step-error', evt => this.notifyPath('_steps'));
         // this.addEventListener('iron-activate', evt => this._handleStepActivate(evt));
-        
+
         this._templateObserver = new Polymer.FlattenedNodesObserver(this, info => {
           if (info.addedNodes.filter(this._isStep).length > 0 ||
             info.removedNodes.filter(this._isStep).length > 0) {
@@ -487,7 +473,7 @@
 
           }
         });
-      } 
+      }
 
       disconnectedCallback() {
         super.disconnectedCallback();
@@ -532,7 +518,7 @@
             maxHeight = stepHeight;
           }
         });
-        if(this.sizing === 'contain') {
+        if (this.sizing === 'contain') {
           this.containerHeight = maxHeight;
         }
       }
@@ -603,7 +589,7 @@
         // step was marked as displabled = false on _selectionChanged.
         if (!(step.alwaysSelectable || step.editable)) {
           step.disabled = true;
-        } 
+        }
         this.notifyPath('_steps');
         this.selected = this._findNextStep(this.selected);
       }
@@ -663,8 +649,9 @@
         const step = this._steps[index];
         if (step && index > -1) {
           e.stopPropagation();
+          // e.preventDefault();
           console.info('handle', step, step.disabled);
-          if(this.linear) {
+          if (this.linear) {
             // if ((step.completed && step.editable) || (!step.completed && step.optional) || step.alwaysSelectable) {
             if (!step.disabled) {
               this._itemActivate(index, step);
@@ -674,7 +661,7 @@
           this._itemActivate(index, step);
         }
       }
-      
+
       _setSlotNames(steps, vertical) {
         if (!this._steps) return;
         steps.forEach((step, i) => {
@@ -708,5 +695,6 @@
     window.UrDeveloper = window.UrDeveloper || {};
     UrDeveloper.UdStepperElement = UdStepperElement;
   }
+
   </script>
 </dom-module>
