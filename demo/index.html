@@ -66,9 +66,10 @@
     </div>
     <demo-snippet>
       <template>
-        <ud-stepper linear sizing="contain" animate>
+        <ud-stepper id="steps" linear sizing="contain" animate>
           <ud-step title="Step 1">
             <div> Step 1 Content</div>
+            <paper-button raised>Content button</paper-button>
           </ud-step>
           <ud-step title="Step 2 with veeeeeery long title">
             <div>Step 2 Content</div>
@@ -224,6 +225,7 @@
   window.addEventListener('WebComponentsReady', function() {
     console.info('ready');
     app = document.querySelector('#app');
+    steps = document.querySelector('#steps');
 
     app.next = e => {
       e.target.dispatchEvent(new CustomEvent('step-action', { detail: 'next', bubbles: true, composed: true }));

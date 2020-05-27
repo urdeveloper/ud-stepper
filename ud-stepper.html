@@ -6,11 +6,40 @@
 <link rel="import" href="../paper-styles/element-styles/paper-material-styles.html">
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../paper-styles/typography.html">
-<link rel="import" href="../iron-selector/iron-selector.html">
+<link rel="import" href="../iron-menu-behavior/iron-menubar-behavior.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../polymer/lib/mixins/mutable-data.html">
 <link rel="import" href="ud-step.html">
 <link rel="import" href="ud-iconset.html">
+
+<dom-module id="ud-stepper-button">
+  <template>
+    <style>
+      host: {
+        display: block
+      }
+    </style>
+    <slot></slot>
+  </template>
+  <script>
+  (function() {
+    /**
+     * `ud-stepper-button`
+     *  private element to make sure we capture 'spacebar' downkey event when the 
+     *  element has focus. This is similar to how paper-tab work. 
+     */
+    class UdStepperButton extends 
+     Polymer.mixinBehaviors(Polymer.IronButtonState, Polymer.Element) {
+      static get is() {
+        return 'ud-stepper-button';
+      }
+    }
+     customElements.define(UdStepperButton.is, UdStepperButton);
+  })();
+    
+  </script>
+</dom-module>
+
 <dom-module id="ud-stepper">
   <template>
     <style include="paper-material-styles">
@@ -45,7 +74,7 @@
       flex: 1;
     }
 
-    :host(:not([vertical])) .header[selected] {
+    :host(:not([vertical])) .header[aria-selected] {
       background: var(--ud-stepper-selected-header-background, var(--google-grey-300));
       @apply --ud-stepper-selected-header;
     }
@@ -120,36 +149,36 @@
 
 
     :host(:not([vertical])) .header:hover,  
-    :host(:not([vertical])) .header[selected] {
+    :host(:not([vertical])) .header[aria-selected] {
       overflow: visible;
     }
 
     :host(:not([vertical])) .header:hover .label-text .main,
-    :host(:not([vertical])) .header[selected] .label-text .main 
+    :host(:not([vertical])) .header[aria-selected] .label-text .main 
     {
       max-width: fit-content;
     }
 
-    .header[completed] .label-circle {
+    .header[aria-checked] .label-circle {
       background-color: var(--ud-stepper-icon-completed-color, var(--google-blue-500));
     }
-    .header.selected .label-circle   {
+    .header[aria-selected] .label-circle   {
       background-color: var(--ud-stepper-icon-selected-color, var(--google-blue-500));
     }
 
-    .header.selected .label-text,
-    .header[completed] .label-text {
+    .header[aria-selected] .label-text,
+    .header[aria-checked] .label-text {
       color: rgba(0, 0, 0, 0.87);
     }
     
-    .header.selected .label-text {
+    .header[aria-selected] .label-text {
       @apply --paper-font-body2;
     }
 
-    .header[error] .label-circle {
+    .header[aria-invalid] .label-circle {
       background-color: var(--ud-stepper-icon-error-color, var(--paper-deep-orange-a700));
     }
-    .header[error] .label-text {
+    .header[aria-invalid] .label-text {
       color: var(--ud-stepper-icon-error-color, var(--paper-deep-orange-a700));
     }
 
@@ -247,10 +276,10 @@
       display: none;
     }
     </style>
-    <iron-selector id="selector" class="header-container" selectable=".header.selectable" selected-class="selected" selected="{{selected}}" on-iron-activate="_handleStepActivate" selected-attribute="selected">
+    <div class="header-container" role="tablist">
       <dom-repeat items="[[_steps]]" mutable-data>
         <template>
-          <div class="header selectable" completed$="[[item.completed]]" error$="[[item.error]]">
+          <ud-stepper-button class="header selectable" role="tab" aria-checked="[[item.completed]]" aria-disabled="[[item.disabled]]" aria-invalid$="[[item.error]]">
             <div class="label">
               <div class="label-circle">
                 <dom-if if="[[item._currentIcon]]">
@@ -281,10 +310,10 @@
                 </div>
               </template>
             </dom-if>
-          </div>
+          </ud-stepper-button>
         </template>
       </dom-repeat>
-    </iron-selector>
+    </div>
     <dom-if if="[[!vertical]]" restamp>
       <template>
         <dom-if if="[[animate]]" restamp>
@@ -324,12 +353,24 @@
      * `--ud-stepper-selected-header-background` | The color of a selected header label  | `--google-grey-300`
      * `--ud-stepper-selected-header` | Style mixin for selected header | `{}`
      *
+     * ### Accesibility
+     *
+     * As the stepper inherits from IronMenubarBehavior, it can be navigated through keyboard. 
+     * Role of header is `tablist`, each stepper button has a `tab` role.
+     * When a step is completed, `aria-checked` of its corresponding button is set to true. 
+     * Steps not accesible have `aria-disabled` set to true. 
+     * `aria-invalid` is set to true when a step has an error.
+     *
      * @customElement
      * @polymer
      * @memberof UrDeveloper
      * @demo demo/index.html
      */
-    class UdStepperElement extends Polymer.MutableData(Polymer.Element) {
+    class UdStepperElement extends 
+    Polymer.mixinBehaviors(Polymer.IronMenubarBehavior,
+      Polymer.MutableData(
+          Polymer.Element)) {
+
       static get is() {
         return 'ud-stepper';
       }
@@ -402,6 +443,16 @@
           containerHeight: {
             type: Number
           },
+
+          selectable: {
+            type: String, 
+            value: '.header.selectable'
+          },
+
+          selectedAttribute: {
+            type: String, 
+            value: 'active'
+          }
         };
       }
 
@@ -412,8 +463,12 @@
         ];
       }
 
-      constructor() {
-        super();
+      connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener('step-action', evt => this._handleStepAction(evt));
+        this.addEventListener('step-error', evt => this.notifyPath('_steps'));
+        // this.addEventListener('iron-activate', evt => this._handleStepActivate(evt));
+        
         this._templateObserver = new Polymer.FlattenedNodesObserver(this, info => {
           if (info.addedNodes.filter(this._isStep).length > 0 ||
             info.removedNodes.filter(this._isStep).length > 0) {
@@ -421,23 +476,22 @@
             this._prepareSteps(this._steps);
             Polymer.RenderStatus.afterNextRender(this, () => {
               this._setHeight(this.sizing, this._maxHeight, this.vertical, this.animate);
+              const items = this.shadowRoot.querySelectorAll(this.selectable)
+              this._setItems([...items]);
+              if (!this.selected) {
+                this.selected = 0;
+              }
+              // Note(cg): without call to _selectionChanges,  selected step is not marked as selected.
+              this._selectionChanged(this.selected);
             });
 
-            if (!this.selected) {
-              this.selected = 0;
-            }
-            // Note(cg): without call to _selectionChanges,  selected step is not marked as selected.
-            this._selectionChanged(this.selected);
           }
         });
-      }
+      } 
 
-      ready() {
-        super.ready();
-        this.addEventListener('step-action', evt => this._handleStepAction(evt));
-        this.addEventListener('step-error', evt => {
-          this.notifyPath('_steps');
-        });
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._templateObserver.disconnect();
       }
 
       _findSteps() {
@@ -449,6 +503,7 @@
         steps.forEach((step, i) => {
           //don't overwrite the step's actions, if they're already set
           if (step.actions) return;
+          step.disabled = i !== 0;
 
           //By default all steps have continue and cancel action
           const actions = [{
@@ -470,6 +525,7 @@
             });
           }
           step.actions = actions;
+
 
           const stepHeight = parseInt(getComputedStyle(step).height);
           if (stepHeight > maxHeight) {
@@ -543,6 +599,11 @@
       continue (step) {
         if (this.linear && step.error) return;
         step.completed = true;
+        // Note(cg): reset disabled to true if not editable or alwaysSelectable
+        // step was marked as displabled = false on _selectionChanged.
+        if (!(step.alwaysSelectable || step.editable)) {
+          step.disabled = true;
+        } 
         this.notifyPath('_steps');
         this.selected = this._findNextStep(this.selected);
       }
@@ -587,7 +648,8 @@
         this.animate = !this.animate;
       }
 
-      _handleStepActivate(evt) {
+      // @overide iron-menutab-behavior
+      _activateHandler(e) {
         /*
          * the logic here:
          * User is allowed to select any step if stepper is not linear
@@ -596,19 +658,23 @@
          *  - allow user to revist an optional step as long as is not completed
          *  - bypass this logic for `always-selectable`
          */
-        if (this.linear) {
-          const step = this._steps[evt.detail.selected];
-          if (!step) return;
-          if ((step.completed && step.editable) || (!step.completed && step.optional) || step.alwaysSelectable) {
+        const tap = e.composedPath().find(el => el.role === 'tab');
+        const index = this.items.indexOf(tap);
+        const step = this._steps[index];
+        if (step && index > -1) {
+          e.stopPropagation();
+          console.info('handle', step, step.disabled);
+          if(this.linear) {
+            // if ((step.completed && step.editable) || (!step.completed && step.optional) || step.alwaysSelectable) {
+            if (!step.disabled) {
+              this._itemActivate(index, step);
+            }
             return;
           }
-          // Only call preventDefault() if the event comes from our own iron-selector
-          if (evt.target.id === "selector" && evt.target.selectable === ".header.selectable") {
-            evt.preventDefault();
-          }
+          this._itemActivate(index, step);
         }
       }
-
+      
       _setSlotNames(steps, vertical) {
         if (!this._steps) return;
         steps.forEach((step, i) => {
@@ -620,6 +686,10 @@
         if (!this._steps) return;
         this._steps.forEach((step, i) => {
           step.selected = i == selected;
+          if (i === selected) {
+            step.disabled = false;
+            step.setFocus();
+          }
         });
       }
 

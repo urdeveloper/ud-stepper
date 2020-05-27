@@ -41,7 +41,6 @@
 
     paper-button,
     #actions ::slotted(paper-button) {
-      @apply --paper-font-button;
       color: rgba(0, 0, 0, 0.83);
     }
 
@@ -249,10 +248,6 @@
         return ['_updateActionsButtons(_actionButtons.*,_linearActionButtons.*,actions.*)'];
       }
 
-      ready() {
-        super.ready();
-      }
-
       connectedCallback() {
         super.connectedCallback();
         if (this.hideActions) return;
@@ -311,7 +306,7 @@
       _errorChanged(invalid) {
         this.dispatchEvent(new CustomEvent('step-error', {
           detail: {
-            stpe: this
+            step: this
           },
           bubbles: true
         }));
@@ -319,6 +314,12 @@
 
       _reset() {
         this.completed = false;
+      }
+
+      setFocus() {
+        const content = this.$.content;
+        content.setAttribute('tabindex', '0');
+        content.focus();
       }
     }
 
