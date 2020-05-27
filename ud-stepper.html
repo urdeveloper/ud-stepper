@@ -307,14 +307,14 @@
       </template>
     </div>
     <template is="dom-if" if="[[!vertical]]" restamp>
-      <!-- <template is="dom-if" if="[[animate]]" restamp> -->
+      <template is="dom-if" if="[[animate]]" restamp>
         <neon-animated-pages id="pageContainer" selected="[[selected]]" entry-animation="slide-from-right-animation" exit-animation="slide-left-animation">
           <slot name="horizontal"></slot>
         </neon-animated-pages>
-      <!-- </template> -->
-      <!-- <template is="dom-if" if="[[!animate]]" restamp>
+      </template>
+      <template is="dom-if" if="[[!animate]]" restamp>
         <slot name="horizontal"></slot>
-      </template> -->
+      </template>
     </template>
   </template>
   <script>
@@ -675,7 +675,7 @@
           step.selected = i == selected;
           if (i === selected) {
             step.disabled = false;
-            step.setFocus();
+            setTimeout(() => {step.setFocus()}, this.animate ? 500 : 0);
           }
         });
       }
