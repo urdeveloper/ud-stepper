@@ -487,6 +487,10 @@
         this._templateObserver.disconnect();
       }
 
+      // @override menubarbehavior. we do not want to activate menu search 
+      _focusWithKeyboardEvent() {
+      }
+
       _findSteps() {
         return Array.from(this.querySelectorAll('ud-step'));
       }
