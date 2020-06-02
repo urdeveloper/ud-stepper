@@ -111,7 +111,14 @@
     .header:focus {
       background-color: var(--google-grey-100);
       font-weight: 500;
-      /*outline: none;*/
+      outline: none;
+    }
+    .header:focus {
+      box-shadow: 0 1px 0 var(--ud-stepper-icon-selected-color, var(--google-blue-500));
+    }
+
+    .header:focus-visible {
+      box-shadow: 0 2px 0 var(--ud-stepper-icon-selected-color, var(--google-blue-500));
     }
 
     .label-circle {
