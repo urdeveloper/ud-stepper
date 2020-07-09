@@ -287,7 +287,7 @@
     </style>
     <div class="header-container" role="tablist">
       <template is="dom-repeat" items="[[_steps]]" mutable-data>
-        <ud-stepper-button class="header selectable" role="tab" aria-checked="[[item.completed]]" aria-disabled="[[item.disabled]]" aria-invalid$="[[item.error]]">
+        <ud-stepper-button class="header selectable" role="tab" aria-checked$="[[item.completed]]" aria-disabled$="[[item.disabled]]" aria-invalid$="[[item.error]]">
           <div class="label">
             <div class="label-circle">
               <template is="dom-if" if="[[item._currentIcon]]">
