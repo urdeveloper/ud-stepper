@@ -15,6 +15,10 @@
       @apply --ud-step-content-style;
       margin: 24px 24px 16px 24px;
     }
+    
+    #content:focus {
+      outline: none;
+    }
 
     #actions {
       padding: 0px 24px 8px 24px;
@@ -41,7 +45,6 @@
 
     paper-button,
     #actions ::slotted(paper-button) {
-      @apply --paper-font-button;
       color: rgba(0, 0, 0, 0.83);
     }
 
@@ -54,6 +57,12 @@
     #actions ::slotted(paper-button[disabled]) {
       color: rgba(0, 0, 0, 0.50);
       background-color: transparent;
+    }
+
+    paper-button:focus, 
+    #actions ::slotted(paper-button:focus) {
+      background-color: var(--google-grey-300);
+
     }
     </style>
     <div id="content">
@@ -135,7 +144,7 @@
           },
 
           /* 
-           * `alwaysSelectable` true to allow the step to always be selectable, even if linead and completed
+           * `alwaysSelectable` true to allow the step to always be selectable, even if linear and completed
            */
            alwaysSelectable: {
              type:  Boolean,
@@ -243,10 +252,6 @@
         return ['_updateActionsButtons(_actionButtons.*,_linearActionButtons.*,actions.*)'];
       }
 
-      ready() {
-        super.ready();
-      }
-
       connectedCallback() {
         super.connectedCallback();
         if (this.hideActions) return;
@@ -305,7 +310,7 @@
       _errorChanged(invalid) {
         this.dispatchEvent(new CustomEvent('step-error', {
           detail: {
-            stpe: this
+            step: this
           },
           bubbles: true
         }));
@@ -313,6 +318,12 @@
 
       _reset() {
         this.completed = false;
+      }
+
+      setFocus() {
+        const content = this.$.content;
+        content.setAttribute('tabindex', '0');
+        content.focus();
       }
     }
 
