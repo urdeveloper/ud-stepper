@@ -562,7 +562,8 @@
 
       _handleStepAction(evt) {
         const actionHandler = this[evt.detail.toLowerCase()];
-        const step = evt.path.find(node => this._isStep(node));
+        const path = evt.path || evt.composedPath();
+        const step = path.find(node => this._isStep(node));
         if (actionHandler && step) actionHandler.apply(this, [step]);
       }
 
