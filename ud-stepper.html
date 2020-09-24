@@ -445,7 +445,14 @@
           selectedAttribute: {
             type: String,
             value: 'active'
-          }
+          },
+
+          // @override prevent listen to arrow binding
+          // keyEventTarget: {
+          //   type: Object,
+          //   value: null
+          // }
+
         };
       }
 
@@ -562,7 +569,8 @@
 
       _handleStepAction(evt) {
         const actionHandler = this[evt.detail.toLowerCase()];
-        const step = evt.path.find(node => this._isStep(node));
+        const path = evt.path || evt.composedPath();
+        const step = path.find(node => this._isStep(node));
         if (actionHandler && step) actionHandler.apply(this, [step]);
       }
 
@@ -661,7 +669,7 @@
         if (step && index > -1) {
           e.stopPropagation();
           // e.preventDefault();
-          console.info('handle', step, step.disabled);
+          // console.info('handle', step, step.disabled);
           if (this.linear) {
             // if ((step.completed && step.editable) || (!step.completed && step.optional) || step.alwaysSelectable) {
             if (!step.disabled) {
